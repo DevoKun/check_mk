@@ -183,7 +183,7 @@ def check_auth_cookie(cookie_name):
     # require the user to renew the log when the timeout exceeded.
     if userdb.login_timed_out(username, float(issue_time)):
         del_auth_cookie()
-        return
+        return ''
 
     # Check whether or not a single user session is allowed at a time and the user
     # is doing this request with the currently active session.
@@ -191,7 +191,7 @@ def check_auth_cookie(cookie_name):
         session_id = get_session_id_from_cookie(username)
         if not userdb.is_valid_user_session(username, session_id):
             del_auth_cookie()
-            return
+            return ''
 
     # Once reached this the cookie is a good one. Renew it!
     renew_cookie(cookie_name, username)
