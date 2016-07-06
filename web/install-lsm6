@@ -1,0 +1,10 @@
+SITE=lsm6
+rsync \
+    --exclude=defaults.py \
+    --exclude "*mkevent*" \
+    --exclude "*cmc.py" \
+    --exclude "*omd_configuration.py" \
+    -varx htdocs plugins root@10.3.3.5:/omd/sites/$SITE/share/check_mk/web/
+#    --delete \
+echo "$C files copied"
+ssh root@10.3.3.5 omd restart $SITE apache
