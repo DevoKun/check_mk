@@ -12,6 +12,7 @@
     * 3707 FIX: oracle_tablespaces: cleanup...
 
     Multisite:
+    * 3575 User logins can now be limited to single session at a time...
     * 3662 FIX: Fixed creation/editing of dashboards (regression since 1.2.8p5)
     * 3668 FIX: Fixed slow loading of GUI pages when using a localized GUI
     * 3669 FIX: LDAP: Fixed very long running LDAP sync when using group based sync plugins
