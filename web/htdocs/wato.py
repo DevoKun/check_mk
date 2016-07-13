@@ -15725,10 +15725,17 @@ def configure_attributes(new, hosts, for_what, parent, myself=None, without_attr
             else:
                 title = _u(topic)
 
-            if topic == _("Host tags"):
+            if topic == _("Device tags"):
                 topic_id = "wato_host_tags"
             else:
                 topic_id = None
+
+            for attr, atopic in host_attributes:
+                if atopic == topic:
+                    break
+            else:
+                continue
+
             forms.header(title, isopen = topic == topics[0], table_id = topic_id)
 
         for attr, atopic in all_host_attributes():
@@ -15792,7 +15799,7 @@ def configure_attributes(new, hosts, for_what, parent, myself=None, without_attr
                         inherited_from = _("Inherited from ") + '<a href="%s">%s</a>' % (url, container.title())
                         inherited_value = container.attributes()[attrname]
                         has_inherited = True
-                        if topic == _("Host tags"):
+                        if topic == _("Device tags"):
                             inherited_tags["attr_%s" % attrname] = '|'.join(attr.get_tag_list(inherited_value))
                         break
 
