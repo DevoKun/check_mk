@@ -183,7 +183,7 @@ class BIStatusFilter(Filter):
             if self.code != 'a' and varend == 'n':
                 continue # no unset for read and effective state
             if varend == 'n':
-                html.write("<br>")
+                html.open_br()
             var = self.prefix + varend
             html.checkbox(var, defval, label = text)
 

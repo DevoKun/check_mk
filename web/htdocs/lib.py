@@ -1068,14 +1068,14 @@ def end_floating_options(reset_url=None):
         html.buttonlink(reset_url, _("Reset to defaults"))
 
     html.write("</td></tr></table>")
-    html.write("</div>")
+    html.close_div()
 
 def render_floating_option(name, height, varprefix, valuespec, value):
     html.write('<div class="floatfilter %s %s">' % (height, name))
     html.write('<div class=legend>%s</div>' % valuespec.title())
     html.write('<div class=content>')
     valuespec.render_input(varprefix + name, value)
-    html.write("</div>")
-    html.write("</div>")
+    html.close_div()
+    html.close_div()
 
 

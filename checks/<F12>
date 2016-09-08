@@ -24,18 +24,58 @@
 # to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
 # Boston, MA 02110-1301 USA.
 
-import bi
 
-def render_bi_groups():
-    html.open_ul()
-    for group in bi.aggregation_groups():
-        bulletlink(group, "view.py?view_name=aggr_group&aggr_group=%s" %
-              html.urlencode(group))
-    html.close_ul()
 
-sidebar_snapins["biaggr_groups"] = {
-    "title"       : _("BI Aggregation Groups"),
-    "description" : _("A direct link to all groups of BI aggregations"),
-    "render"      : render_bi_groups,
-    "allowed"     : [ "admin", "user", "guest" ]
+def inventory_hallo_welt_home_dir_size(info):
+    for line in info:
+        split = line[1].split("/")
+        if len(split) == 4:
+             yield (split[3], None)
+
+
+def convert_filesize_to_M(value):
+
+    mult = 1
+    if 'G' in value: mult *= 1000000000
+    elif 'M' in value: mult *= 1000000
+    elif 'K' in value: mult *= 1000
+    
+    div = 1
+
+    if ',' in value:
+        for i in range(len(value.split(',')[1])):
+            div *= 10 
+    
+    value = re.sub("[GMK,]", "", value)
+    value = int(value) * mult / div
+    value = float(value)/1e3
+
+    return value
+    
+
+def hallo_welt_home_dir_size_check(item, params, info):
+
+    if params is not None:
+        warn, crit = params
+    else:
+        warn, crit = 1, 1000
+
+    for line in info:
+       value, key = line[0], line[1]
+       split = key.split("/")
+       if len(split) == 4 and split[3] == item:
+            value = convert_filesize_to_M(value)
+            if value > crit:
+                yield (2, "%0.1fM " %(value))
+            elif value > warn:
+                yield (1, "%0.1fM " %(value))
+            else:
+                yield (0, "%0.1fM " %(value))
+
+
+check_info['hallowelthomedirsize'] = {
+    "check_function"          : hallo_welt_home_dir_size_check,
+    "inventory_function"      : inventory_hallo_welt_home_dir_size,
+    "service_description"     : "Home directory file usage",
+    "group"                   : "hallowelthomedirsize",
 }

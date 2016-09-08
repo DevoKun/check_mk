@@ -431,14 +431,14 @@ multisite_commands.append({
     "render"      : lambda: \
         html.button("_acknowledge", _("Acknowledge")) == \
         html.button("_remove_ack", _("Remove Acknowledgement")) == \
-        html.write("<hr>") == \
+        html.open_hr() == \
         html.checkbox("_ack_sticky", True, label=_("sticky")) == \
         html.checkbox("_ack_notify", True, label=_("send notification")) == \
         html.checkbox("_ack_persistent", False, label=_('persistent comment')) == \
-        html.write("<hr>") == \
+        html.open_hr() == \
         Age(display=["days", "hours", "minutes"], label=_("Expire acknowledgement after")).render_input("_ack_expire", 0) == \
         html.help(_("Note: Expiration of acknowledgements only works when using the Check_MK Micro Core.")) == \
-        html.write("<hr>") == \
+        html.open_hr() == \
         html.write(_("Comment") + ": ") == \
         html.text_input("_ack_comment", size=48, submit="_acknowledge"),
     "action"      : command_acknowledgement,
@@ -682,18 +682,18 @@ def get_child_hosts(site, hosts, recurse):
 def paint_downtime_buttons(what):
     html.write(_('Downtime Comment')+": ")
     html.text_input("_down_comment", "", size=60, submit="")
-    html.write("<hr>")
+    html.open_hr()
     html.button("_down_from_now", _("From now for"))
     html.write("&nbsp;")
     html.number_input("_down_minutes", 60, size=4, submit="_down_from_now")
     html.write("&nbsp; " + _("minutes"))
-    html.write("<hr>")
+    html.open_hr()
     for time_range in config.user_downtime_timeranges:
         html.button("_downrange__%s" % time_range['end'], time_range['title'])
     if what != "aggr":
         html.write(" &nbsp; - &nbsp;")
         html.button("_down_remove", _("Remove all"))
-    html.write("<hr>")
+    html.open_hr()
     if config.adhoc_downtime and config.adhoc_downtime.get("duration"):
         adhoc_duration = config.adhoc_downtime.get("duration")
         adhoc_comment  = config.adhoc_downtime.get("comment", "")
@@ -701,29 +701,29 @@ def paint_downtime_buttons(what):
         html.write("&nbsp;")
         html.write(_('with comment')+": ")
         html.write(adhoc_comment)
-        html.write("<hr>")
+        html.open_hr()
 
     html.button("_down_custom", _("Custom time range"))
     html.datetime_input("_down_from", time.time(), submit="_down_custom")
     html.write("&nbsp; "+_('to')+" &nbsp;")
     html.datetime_input("_down_to", time.time() + 7200, submit="_down_custom")
-    html.write("<hr>")
+    html.open_hr()
     html.checkbox("_down_flexible", False, label=_('flexible with max. duration')+" ")
     html.time_input("_down_duration", 2, 0)
     html.write(" "+_('(HH:MM)'))
     if what == "host":
-        html.write("<hr>")
+        html.open_hr()
         html.checkbox("_include_childs", False, label=_('Also set downtime on child hosts'))
         html.write("  ")
         html.checkbox("_include_childs_recurse", False, label=_('Do this recursively'))
     elif what == "service":
-        html.write("<hr>")
+        html.open_hr()
         html.checkbox("_on_hosts", False, label=_('Schedule downtimes on the affected '
                                                   '<b>hosts</b> instead of on the individual '
                                                   'services'))
 
     if has_recurring_downtimes():
-        html.write("<hr>")
+        html.open_hr()
         html.checkbox("_down_do_recur", False,
                       label=_("Repeat this downtime on a regular base every"))
         html.write(" ")

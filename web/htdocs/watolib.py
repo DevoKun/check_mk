@@ -2767,7 +2767,7 @@ class ContactGroupsAttribute(Attribute):
         for name, group in items:
             html.checkbox(varprefix + self._name + "_n_" + name, name in value["groups"])
             html.write(' <a href="%s">%s</a><br>' % (folder_preserving_link([("mode", "edit_contact_group"), ("edit", name)]), group['alias'] and group['alias'] or name))
-        html.write("<hr>")
+        html.open_hr()
 
         if is_host:
             html.checkbox(varprefix + self._name + "_use", value["use"],
@@ -2776,14 +2776,14 @@ class ContactGroupsAttribute(Attribute):
         elif not is_search:
             html.checkbox(varprefix + self._name + "_recurse_perms", value["recurse_perms"],
                 label = _("Give these groups also <b>permission on all subfolders</b>"))
-            html.write("<hr>")
+            html.open_hr()
             html.checkbox(varprefix + self._name + "_use", value["use"],
                 label = _("Add these groups as <b>contacts</b> to all hosts in this folder"))
-            html.write("<br>")
+            html.open_br()
             html.checkbox(varprefix + self._name + "_recurse_use", value["recurse_use"],
                 label = _("Add these groups as <b>contacts in all subfolders</b>"))
 
-        html.write("<hr>")
+        html.open_hr()
         html.help(_("With this option contact groups that are added to hosts are always "
                "being added to services, as well. This only makes a difference if you have "
                "assigned other contact groups to services via rules in <i>Host & Service Parameters</i>. "
@@ -4393,7 +4393,7 @@ def render_condition_editor(tag_specs, varprefix=""):
     # Show dropdown with "is/isnot/ignore" and beginning
     # of div that is switched visible by is/isnot
     def tag_condition_dropdown(tagtype, deflt, id):
-        html.write("<td>")
+        html.open_td()
         html.select(varprefix + tagtype + "_" + id, [
             ("ignore", _("ignore")),
             ("is",     _("is")),
@@ -4437,7 +4437,7 @@ def render_condition_editor(tag_specs, varprefix=""):
                     else:
                         html.select(varprefix + "tagvalue_" + id,
                             [(t[0], _u(t[1])) for t in choices if t[0] != None], deflt=default_tag)
-                    html.write("</div>")
+                    html.close_div()
                     html.write("</td></tr>")
 
         # And auxiliary tags
@@ -4448,10 +4448,10 @@ def render_condition_editor(tag_specs, varprefix=""):
                     default_tag, deflt = current_tag_setting([(id, _u(title))])
                     tag_condition_dropdown("auxtag", deflt, id)
                     html.write(" " + _("set"))
-                    html.write("</div>")
+                    html.close_div()
                     html.write("</td></tr>")
 
-        html.write("</table>")
+        html.close_table()
         if make_foldable:
             html.end_foldable_container()
 

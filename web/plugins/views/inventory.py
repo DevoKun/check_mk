@@ -165,12 +165,12 @@ def render_inv_subtree_dict(hostname, tree_id, invpath, node):
 
     if leaf_nodes:
         leaf_nodes.sort()
-        html.write("<table>")
+        html.open_table()
         for title, invpath_sub, value in leaf_nodes:
             html.write("<tr><th title='%s'>%s</th><td>" % (invpath_sub, title))
             render_inv_subtree(hostname, tree_id, invpath_sub, value)
             html.write("</td></tr>")
-        html.write("</table>")
+        html.close_table()
 
     non_leaf_nodes = [ item for item in items if not is_leaf_type(item[1]) ]
     non_leaf_nodes.sort()
@@ -191,12 +191,12 @@ def render_inv_subtree_list(hostname, tree_id, invpath, node):
         html.write(_("Removed entries") + ":<br>")
         html.write("<span class=invold>")
         render_inv_subtree_list(hostname, tree_id, invpath, node[0])
-        html.write("</span>")
+        html.close_span()
 
         html.write(_("New entries") + ":<br>")
         html.write("<span class=invnew>")
         render_inv_subtree_list(hostname, tree_id, invpath, node[1])
-        html.write("</span>")
+        html.close_span()
 
     else:
         for nr, value in enumerate(node):
@@ -216,18 +216,18 @@ def render_inv_subtree_leaf(hostname, tree_id, invpath, node):
                 html.write("<span class=invnew>")
             render_inv_subtree_leaf_value(hostname, tree_id, invpath, node[1])
             if node[0] == None:
-                html.write("</span>")
+                html.close_span()
         else:
             html.write("<span class=invold>")
             render_inv_subtree_leaf_value(hostname, tree_id, invpath, node[0])
-            html.write("</span>")
+            html.close_span()
             html.write(u" → ")
             html.write("<span class=invnew>")
             render_inv_subtree_leaf_value(hostname, tree_id, invpath, node[1])
-            html.write("</span>")
+            html.close_span()
     else:
         render_inv_subtree_leaf_value(hostname, tree_id, invpath, node)
-    html.write("<br>")
+    html.open_br()
 
 def render_inv_subtree_leaf_value(hostname, tree_id, invpath, node):
     hint = inv_display_hint(invpath)
@@ -258,12 +258,12 @@ def render_inv_dicttable(hostname, tree_id, invpath, node):
         html.write(_("Removed entries") + ":")
         html.write("<span class=invold>")
         render_inv_dicttable(hostname, tree_id, invpath, node[0])
-        html.write("</span>")
+        html.close_span()
 
         html.write(_("New entries") + ":")
         html.write("<span class=invnew>")
         render_inv_dicttable(hostname, tree_id, invpath, node[1])
-        html.write("</span>")
+        html.close_span()
         return
 
     hint = inv_display_hint(invpath)
@@ -303,10 +303,10 @@ def render_inv_dicttable(hostname, tree_id, invpath, node):
 
     # We cannot use table here, since html.plug() does not work recursively
     html.write('<table class=data>')
-    html.write('<tr>')
+    html.open_tr()
     for title, key in titles:
         html.write('<th>%s</th>' % title)
-    html.write('</tr>')
+    html.close_tr()
 
     for nr, entry in enumerate(node):
         html.write('<tr class=even0>')
@@ -327,9 +327,9 @@ def render_inv_dicttable(hostname, tree_id, invpath, node):
 
             html.write('<td%s>' % classtext)
             render_inv_subtree(hostname, tree_id, invpath_sub, value)
-            html.write('</td>')
-        html.write('</tr>')
-    html.write('</table>')
+            html.close_td()
+        html.close_tr()
+    html.close_table()
 
 
 # Convert .foo.bar:18.test to .foo.bar:*.test

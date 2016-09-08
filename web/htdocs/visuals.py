@@ -438,7 +438,7 @@ def page_create_visual(what, info_keys, next_url = None):
     html.context_button(_("Back"), back_url or "edit_%s.py" % what, "back")
     html.end_context_buttons()
 
-    html.write('<p>')
+    html.open_p()
     html.write(
         _('Depending on the choosen datasource a %s can list <i>multiple</i> or <i>single</i> objects. '
           'For example the <i>services</i> datasource can be used to simply create a list '
@@ -447,7 +447,7 @@ def page_create_visual(what, info_keys, next_url = None):
           'create a list of objects, you do not need to make any selection in this dialog. '
           'If you like to create a view for one specific object of a specific type, select the '
           'object type below and continue.') % what_s)
-    html.write('</p>')
+    html.close_p()
 
     if html.var('save') and html.check_transaction():
         try:
@@ -843,8 +843,8 @@ def show_filter(f):
         html.icon(_("This filter cannot be displayed"), "alert")
         html.write("%s" % e)
 
-    html.write("</div>")
-    html.write("</div>")
+    html.close_div()
+    html.close_div()
 
 
 # Base class for all filters
@@ -1422,7 +1422,7 @@ def transform_old_visual(visual):
 def ajax_popup_add():
     add_type = html.var("add_type")
 
-    html.write("<ul>")
+    html.open_ul()
     pagetypes.render_addto_popup(add_type)
 
     for visual_type_name, visual_type in visual_types.items():

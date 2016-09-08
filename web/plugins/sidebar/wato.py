@@ -196,7 +196,7 @@ def render_tree_folder(tree_id, folder, js_func):
 
     # Suppress indentation for non-emtpy root folder
     if folder['.path'] == '' and is_leaf:
-        html.write("<ul>") # empty root folder
+        html.open_ul() # empty root folder
     elif folder and folder['.path'] != '':
         html.write("<ul style='padding-left: 0px;'>")
 
@@ -211,7 +211,7 @@ def render_tree_folder(tree_id, folder, js_func):
     else:
         html.write("<li>" + title + "</li>")
 
-    html.write("</ul>")
+    html.close_ul()
 
 
 def sort_by_title(folders):

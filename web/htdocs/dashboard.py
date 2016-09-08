@@ -428,7 +428,7 @@ def dashlet_error(nr, dashlet, msg):
     html.write("<div>")
     html.write(_('Problem while rendering dashlet %d of type %s: ') % (nr, dashlet["type"]))
     html.write(html.attrencode(msg).replace("\n", "<br>")+"</div>")
-    html.write("</div>")
+    html.close_div()
 
 
 def dashlet_container_begin(nr, dashlet):
@@ -442,7 +442,7 @@ def dashlet_container_begin(nr, dashlet):
 
 
 def dashlet_container_end():
-    html.write("</div>\n")
+    html.close_div()
 
 
 def draw_dashlet_content(nr, the_dashlet, wato_folder, stash_html_vars=True):
@@ -506,9 +506,9 @@ def dashboard_edit_controls(name, board, dashlet_types):
                     url = dashlet_type['add_urlfunc']()
                 html.write('<li><a href="%s"><img src="images/dashlet_%s.png" />%s</a></li>\n' %
                                                             (url, ty, dashlet_type['title']))
-        html.write('</ul>\n')
+        html.close_ul()
 
-        html.write('</li>\n')
+        html.close_li()
 
         #
         # Properties link
@@ -537,12 +537,12 @@ def dashboard_edit_controls(name, board, dashlet_types):
                    'onclick="toggle_dashboard_edit(true)"><img src="images/trans.png" />%s</a></li>\n' %
                         (display, _('Edit Dashboard')))
 
-    html.write("</ul>\n")
+    html.close_ul()
 
     html.icon_button(None, _('Edit the Dashboard'), 'dashboard_controls', 'controls_toggle',
                     onclick = 'void(0)')
 
-    html.write("</div>\n")
+    html.close_div()
 
 
 # Render dashlet custom scripts
@@ -714,12 +714,12 @@ def draw_dashlet(name, board, nr, dashlet, wato_folder):
         html.write('<div style="width: 100%; height: 100%; -webkit-overflow-scrolling:touch;">')
         html.write('<iframe id="dashlet_iframe_%d" allowTransparency="true" frameborder="0" width="100%%" '
                    'height="100%%" src="%s"> </iframe>' % (nr, url))
-        html.write('</div>')
+        html.close_div()
         if dashlet.get("reload_on_resize"):
             html.javascript('reload_on_resize["%d"] = "%s"' %
                             (nr, add_wato_folder_to_url(dashlet["iframe"], wato_folder)))
 
-    html.write("</div>")
+    html.close_div()
 
 #.
 #   .--Draw Dashlet--------------------------------------------------------.

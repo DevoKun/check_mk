@@ -275,8 +275,8 @@ def section(title = None, checkbox = None, id = "", simple=False, hide = False, 
             else:
                 name, active, attrname = checkbox
                 html.checkbox(name, active, onclick = 'wato_toggle_attribute(this, \'%s\')' % attrname)
-            html.write('</div>')
-        html.write('</td>')
+            html.close_div()
+        html.close_td()
     html.write('<td class="content%s">' % (simple and " simple" or ""))
     g_section_open = True
 
@@ -288,5 +288,5 @@ def end():
     html.end_foldable_container()
     html.write('<tr class="bottom %s"><td colspan=2></td></tr>'
             % (g_section_isopen and "open" or "closed"))
-    html.write('</table>')
+    html.close_table()
 

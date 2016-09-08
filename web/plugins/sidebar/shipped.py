@@ -46,12 +46,12 @@ import cmk.store as store
 
 def render_about():
     html.write(_("Version: ") + cmk.__version__)
-    html.write("<ul>")
+    html.open_ul()
     bulletlink(_("Homepage"),        "http://mathias-kettner.de/check_mk.html")
     bulletlink(_("Documentation"),   "http://mathias-kettner.de/checkmk.html")
     bulletlink(_("Download"),        "http://mathias-kettner.de/check_mk_download.html")
     bulletlink("Mathias Kettner", "http://mathias-kettner.de")
-    html.write("</ul>")
+    html.close_ul()
 
 sidebar_snapins["about"] = {
     "title" : _("About Check_MK"),
@@ -181,7 +181,7 @@ def render_dashboards():
                     if foldable:
                         html.begin_foldable_container("dashboards", topic, False, topic, indent=True)
                     else:
-                        html.write('<ul>')
+                        html.open_ul()
                     first = False
                 bulletlink(title, 'dashboard.py?name=%s' % name, onclick = "return wato_views_clicked(this)")
 
@@ -189,7 +189,7 @@ def render_dashboards():
             if foldable:
                 html.end_foldable_container()
             else:
-                html.write('<ul>')
+                html.open_ul()
 
     by_topic = visuals_by_topic(dashboard.permitted_dashboards().items(), default_order = [ _('Overview') ])
     topics = [ topic for topic, entry in by_topic ]
@@ -230,11 +230,11 @@ def render_groups(what):
     name_to_alias = dict(data)
     groups = [(name_to_alias[name].lower(), name_to_alias[name], name) for name in name_to_alias.keys()]
     groups.sort() # sort by Alias in lowercase
-    html.write('<ul>')
+    html.open_ul()
     for alias_lower, alias, name in groups:
         url = "view.py?view_name=%sgroup&%sgroup=%s" % (what, what, html.urlencode(name))
         bulletlink(alias or name, url)
-    html.write('</ul>')
+    html.close_ul()
 
 sidebar_snapins["hostgroups"] = {
     "title" : _("Host Groups"),
@@ -302,8 +302,8 @@ def render_hosts(mode):
     col = 1
     for site, host, state, worstsvc in hosts:
         if col == 1:
-            html.write("<tr>")
-        html.write("<td>")
+            html.open_tr()
+        html.open_td()
 
         if state > 0 or worstsvc == 2:
             statecolor = 2
@@ -315,16 +315,16 @@ def render_hosts(mode):
             statecolor = 0
         html.write('<div class="statebullet state%d">&nbsp;</div> ' % statecolor)
         html.write(link(host, target + ("&host=%s&site=%s" % (html.urlencode(host), html.urlencode(site)))))
-        html.write("</td>")
+        html.close_td()
         if col == num_columns:
-            html.write("</tr>\n")
+            html.close_tr()
             col = 1
         else:
             col += 1
 
     if col < num_columns:
-        html.write("</tr>\n")
-    html.write("</table>\n")
+        html.close_tr()
+    html.close_table()
 
 snapin_allhosts_styles = """
   .snapin table.allhosts { width: 100%; }
@@ -413,7 +413,7 @@ def render_hostmatrix():
     row = 1
     for site, host, state, has_been_checked, worstsvc, downtimedepth in hosts:
         if col == 1:
-            html.write("<tr>")
+            html.open_tr()
         if downtimedepth > 0:
             s = "d"
         elif not has_been_checked:
@@ -435,7 +435,7 @@ def render_hostmatrix():
             row += 1
         else:
             col += 1
-    html.write("</table>")
+    html.close_table()
 
 
 sidebar_snapins["hostmatrix"] = {
@@ -496,8 +496,8 @@ def render_sitestatus():
             html.write("<td class=state>")
             html.icon_button("#", _("%s this site") % (state["state"] == "disabled" and "enable" or "disable"),
                              "sitestatus_%s" % state["state"], onclick=onclick)
-            html.write("</tr>\n")
-        html.write("</table>\n")
+            html.close_tr()
+        html.close_table()
 
 
 sidebar_snapins["sitestatus"] = {
@@ -632,7 +632,7 @@ def render_tactical_overview(extra_filter_headers="", extra_url_variables=None):
             title_row += "<th>%s</th></tr>" % _("Stale")
         html.write("%s\n" % title_row)
 
-        html.write("<tr>")
+        html.open_tr()
         url = html.makeuri_contextless([("view_name", "all" + what + "s")] + extra_url_variables, filename="view.py")
         html.write('<td class="total %s"><a target="main" href="%s">%d</a></td>' % (td_class, url, amount))
 
@@ -648,8 +648,8 @@ def render_tactical_overview(extra_filter_headers="", extra_url_variables=None):
             text = link(str(stales), url)
             html.write('<td class="%s%s">%s</td>' % (td_class, value == 0 and " " or ' states prob', text))
 
-        html.write("</tr>\n")
-    html.write("</table>\n")
+        html.close_tr()
+    html.close_table()
 
     failed_notifications = notdata[0]
     if failed_notifications:
@@ -761,7 +761,7 @@ def render_performance():
         write_line(_('Com. buf. max/total'), "%d / %d" % (maxx, size))
 
 
-    html.write("</table>\n")
+    html.close_table()
 
 sidebar_snapins["performance"] = {
     "title" : _("Server Performance"),
@@ -808,7 +808,7 @@ def render_speedometer():
     html.write("<div class=speedometer>");
     html.write('<img id=speedometerbg src="images/speedometer.png">')
     html.write('<canvas width=228 height=136 id=speedometer></canvas>')
-    html.write("</div>")
+    html.close_div()
 
     html.javascript("""
 function show_speed(percentage) {
@@ -975,10 +975,10 @@ div.time {
 #   '----------------------------------------------------------------------'
 
 def render_nagios():
-    html.write('<ul>')
+    html.open_ul()
     bulletlink("Home", "http://www.nagios.org")
     bulletlink("Documentation", "%snagios/docs/toc.html" % config.url_prefix())
-    html.write('</ul>')
+    html.close_ul()
     for entry in [
         "General",
         ("tac.cgi", "Tactical Overview"),
@@ -1014,15 +1014,15 @@ def render_nagios():
         ("config.cgi", "Configuration"),
         ]:
         if type(entry) == str:
-            html.write('</ul>')
+            html.close_ul()
             heading(entry)
-            html.write('<ul>')
+            html.open_ul()
         else:
             ref, text = entry
             if text[0] == "*":
                 html.write("<ul class=link>")
                 nagioscgilink(text[1:], ref)
-                html.write("</ul>")
+                html.close_ul()
             else:
                 nagioscgilink(text, ref)
 
@@ -1082,7 +1082,7 @@ def render_master_control():
                              "snapin_switch_" + (colvalue and "on" or "off"), onclick=onclick)
             html.write("</td></tr>")
             # html.write("<a onclick=\"%s\" href=\"#\">%s</a></td></tr>\n" % (title, enabled, onclick, enabled))
-        html.write("</table>")
+        html.close_table()
         if not config.is_single_local_site():
             html.end_foldable_container()
 
@@ -1530,7 +1530,7 @@ def render_wiki():
     html.write('<form id="wiki_search" onSubmit="wiki_search()">')
     html.write('<input id="wiki_search_field" type="text" name="wikisearch"></input>\n')
     html.icon_button("#", _("Search"), "wikisearch", onclick="wiki_search();")
-    html.write('</form>')
+    html.close_form()
     html.write('<div id="wiki_side_clear"></div>')
 
     start_ul = True
@@ -1548,14 +1548,14 @@ def render_wiki():
                 title = line[:-1]
             elif line == "----":
                 pass
-                # html.write("<br>")
+                # html.open_br()
 
             elif line.startswith("*"):
                 if start_ul == True:
                     if title:
                          html.begin_foldable_container("wikisnapin", title, True, title, indent=True)
                     else:
-                        html.write('<ul>')
+                        html.open_ul()
                     start_ul = False
                     ul_started = True
 
@@ -1584,7 +1584,7 @@ def render_wiki():
                 html.write(line)
 
         if ul_started == True:
-            html.write("</ul>")
+            html.close_ul()
     except IOError:
         html.write("<p>To get a navigation menu, you have to create a <a href='/%s/wiki/doku.php?id=%s' "
                    "target='main'>sidebar</a> in your wiki first.</p>" % (config.omd_site(), _("sidebar")))
@@ -1897,7 +1897,7 @@ def render_tag_tree_level(taggroups, path, cwd, title, tree):
                     html.icon_button(url, _("Show the service problems contained in this branch"),
                             "svc_problems", target="main")
                 html.write(href)
-                html.write("<br>")
+                html.open_br()
         else:
             render_tag_tree_level(taggroups, subpath, cwd, href, subtree)
 
@@ -1942,7 +1942,7 @@ def render_tag_tree():
         html.icon_button(upurl, _("Go up one tree level"), "back")
 
     html.select("vtree", choices, str(tree_conf["tree"]), onchange = 'virtual_host_tree_changed(this)')
-    html.write("<br>")
+    html.open_br()
     html.end_form()
     html.final_javascript(virtual_host_tree_js)
 

@@ -99,18 +99,18 @@ def jqm_page_header(title, id=None, left_button=None, right_button=None):
     html.write('<h1>%s</h1>\n' % title)
     if right_button:
         jqm_header_button("right",*right_button)
-    html.write('</div>')
+    html.close_div()
     html.write('<div data-role="content">\n')
 
 def jqm_page_footer(content=""):
-    html.write('</div>') # close content-div
+    html.close_div() # close content-div
     html.write(
         '</div>\n'
         '<div data-role="footer"><h4>%s</h4></div>\n' % content)
-    html.write('</div>') # close page-div
+    html.close_div() # close page-div
 
 def jqm_page_navfooter(items, current, page_id):
-    html.write("</div>\n") # close content
+    html.close_div() # close content
     html.write(
         '<div data-role="footer" data-position="fixed">\n'
         '<div data-role="navbar">\n'
@@ -131,7 +131,7 @@ def jqm_page_navfooter(items, current, page_id):
         '</ul>\n'
         '</div>\n'
         '</div>\n')
-    html.write('</div>') # close page-div
+    html.close_div() # close page-div
 
 
 def jqm_page_index(title, items):
@@ -154,7 +154,7 @@ def jqm_page_index_topic_renderer(topic, items):
             for top, href, title in items:
                 if top == topic:
                     html.write('<li><a data-ajax="false" data-transition="flip" href="%s">%s</a></li>\n' % (href, title))
-            html.write('</ul>')
+            html.close_ul()
             return
 
 
@@ -179,7 +179,7 @@ def page_login():
 
     html.text_input("_username", label = _("Username:"))
     html.password_input("_password", size=None, label = _("Password:"))
-    html.write("<br>")
+    html.open_br()
     html.button("_login", _('Login'))
     html.set_focus("_username")
     html.end_form()
@@ -187,7 +187,7 @@ def page_login():
     html.write('<img class="logomk" src="images/logo_cmk_small.png">')
     html.write('<div class="copyright">%s</div>' %
       _("&copy; <a target=\"_blank\" href=\"http://mathias-kettner.de\">Mathias Kettner</a>"))
-    html.write('</div>')
+    html.close_div()
     jqm_page_footer()
     mobile_html_foot()
 
@@ -210,14 +210,14 @@ def page_index():
     jqm_page_index(_("Check_MK Mobile"), items)
     # Link to non-mobile GUI
 
-    html.write('<hr>')
+    html.open_hr()
     html.write('<ul data-role="listview" data-theme="b" data-inset="true">\n')
     html.write('<li><a data-ajax="false" data-transition="fade" href="%s">%s</a></li>\n' %                 ("index.py?mobile=", _("Classical web GUI")))
-    html.write('</ul>\n')
+    html.close_ul()
 
     html.write('<ul data-role="listview" data-theme="f" data-inset="true">\n')
     html.write('<li><a data-ajax="false" data-transition="fade" href="%s">%s</a></li>\n' %                 ("logout.py", _("Logout")))
-    html.write('</ul>\n')
+    html.close_ul()
     mobile_html_foot()
 
 def page_view():
@@ -309,7 +309,7 @@ def render_view(view, rows, datasource, group_painters, painters,
 				  show_checkboxes and not html.do_actions())
 	      except Exception, e:
 		  html.write(_("Error showing view: %s") % e)
-	  html.write("</div>")
+	  html.close_div()
 	  jqm_page_navfooter(navbar, 'data', page_id)
 
     # Page: Context buttons
@@ -331,8 +331,8 @@ def show_filter_form(show_filters):
         html.write('<li data-role="fieldcontain">\n')
         html.write('<legend>%s</legend>' % title)
         f.display()
-        html.write('</li>')
-    html.write("</ul>\n")
+        html.close_li()
+    html.close_ul()
     html.hidden_fields()
     html.write('<input type="hidden" name="search" value="Search">')
     html.write('<input type="hidden" name="page" value="data">')
@@ -367,7 +367,7 @@ def show_command_form(view, datasource, rows):
             command["render"]()
             html.write('</p></div>\n')
             one_shown = True
-    html.write("</div>")
+    html.close_div()
     if not one_shown:
         html.write(_('No commands are possible in this view'))
 

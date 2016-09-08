@@ -97,7 +97,7 @@ def page_version():
     html.header(_("Check_MK %s Release Notes") % cmk.__version__, stylesheets = werks_stylesheets)
     load_werks()
     handle_acknowledgement()
-    render_werks_table()
+    werks_table()
     html.footer()
 
 
@@ -151,7 +151,7 @@ def page_werk():
     werk_table_row(_("Compatibility"), render_werk_compatibility(werk), css="werkcomp werkcomp%s" % werk["compatible"])
     werk_table_row(_("Description"), render_werk_description(werk), css="nowiki")
 
-    html.write("</table>")
+    html.close_table()
 
     html.footer()
 
@@ -373,10 +373,56 @@ def render_unacknowleged_werks():
         html.write("%s<br><br>" % _("<b>Warning:</b> There are %d unacknowledged incompatible werks:") % len(werks))
         url = html.makeuri_contextless([("show_unack", "1"), ("wo_compatibility", "3")])
         html.write('<a href="%s">Show unacknowledged incompatible werks</a>' % url)
-        html.write("</div>")
+        html.close_div()
 
 
-def render_werks_table():
+def werks_table():
+    werk_table_options = render_werk_table_options()
+
+    if html.var("show_unack") and not html.var("wo_set"):
+        werk_table_options = default_werk_table_options()
+        werk_table_options["compatibility"] = [ "incomp_unack" ]
+
+    werklist = []
+
+    if werk_table_options["grouping"] == "version":
+        werklist = werks_sorted_by_version(g_werks.values())
+    else:
+        werklist = werks_sorted_by_date(g_werks.values())
+
+    werkfilter = lambda werk: werk_matches_options(werk, werk_table_options)
+
+    begin_new_group = lambda title:\
+        table.begin(title=title, limit=None, searchable = False, sortable = False, css="werks")
+
+    current_group = False
+
+    for werk in filter(werkfilter, werklist):
+
+        group = werk_group_value(werk, werk_table_options["grouping"])
+        if group != current_group:
+            if current_group != False:
+                table.end()
+            begin_new_group(group)
+            current_group = group
+
+        table.row()
+        table.cell(_("ID"), render_werk_id(werk, with_link=True), css="number narrow")
+        table.cell(_("Version"), werk["version"], css="number narrow")
+        table.cell(_("Date"), render_werk_date(werk), css="number narrow")
+        table.cell(_("Class"), render_werk_class(werk), css="werkclass werkclass%s" % werk["class"])
+        table.cell(_("Level"), render_werk_level(werk), css="werklevel werklevel%d" % werk["level"])
+        table.cell(_("Compatibility"), render_werk_compatibility(werk), css="werkcomp werkcomp%s" % werk["compatible"])
+        table.cell(_("Component"), render_werk_component(werk), css="nowrap")
+        table.cell(_("Title"), render_werk_title(werk))
+
+    if current_group != False:
+        table.end()
+    else:
+        html.h3(_("No matching Werks found."))
+
+
+def render_werks_table_old():
 
     werk_table_options = render_werk_table_options()
 

@@ -208,7 +208,7 @@ class Age(ValueSpec):
                 first = False
             else:
                 takeover = (takeover + value) * tkovr_fac
-        html.write("</div>")
+        html.close_div()
 
     def from_html_vars(self, varprefix):
         # TODO: Validate for correct numbers!
@@ -413,7 +413,7 @@ class TextAscii(ValueSpec):
         )
         if self._prefix_buttons:
             self.render_buttons()
-            html.write('</div>')
+            html.close_div()
 
     def render_buttons(self):
         html.write("&nbsp;")
@@ -985,7 +985,7 @@ class TextAreaUnicode(TextUnicode):
         html.text_area(varprefix, value, rows=rows, cols=self._cols, attrs = attrs)
         if self._prefix_buttons:
             self.render_buttons()
-            html.write('</div>')
+            html.close_div()
 
 
     # Overridded because we do not want to strip() here and remove '\r'
@@ -1085,14 +1085,19 @@ class ListOfStrings(ValueSpec):
         for nr, s in enumerate(value + [""]):
             html.write('<div>')
             self._valuespec.render_input(vp + "_%d" % nr, s)
-            html.write('</div>')
-        html.write('</div>')
-        html.write("<div style=\"clear:left\"></div>")
+            html.close_div()
+
+        html.close_div()
+
+        html.div('', style="clear:left")
         html.help(self.help())
+
         html.javascript("list_of_strings_init('%s');" % vp);
+
 
     def canonical_value(self):
         return []
+
 
     def value_to_text(self, value):
         if not value:
@@ -1106,6 +1111,7 @@ class ListOfStrings(ValueSpec):
         else:
             return ", ".join([ self._valuespec.value_to_text(v) for v in value ])
 
+
     def from_html_vars(self, vp):
         value = []
         nr = 0
@@ -1118,12 +1124,14 @@ class ListOfStrings(ValueSpec):
             nr += 1
         return value
 
+
     def validate_datatype(self, value, vp):
         if type(value) != list:
             raise MKUserError(vp, _("Expected data type is list, but your type is %s.") %
                                                                         type_name(value))
         for nr, s in enumerate(value):
             self._valuespec.validate_datatype(s, vp + "_%d" % nr)
+
 
     def validate_value(self, value, vp):
         if len(value) == 0 and not self._allow_empty:
@@ -1243,8 +1251,8 @@ class ListOf(ValueSpec):
             html.write("</td><td class=vlof_content>")
             self._valuespec.render_input(varprefix + "_%d" % (nr+1), v)
             html.write("</td></tr>")
-        html.write("</table>")
-        html.write("<br>")
+        html.close_table()
+        html.open_br()
         html.jsbutton(varprefix + "_add", self._add_label,
             "valuespec_listof_add('%s', '%s')" % (varprefix, self._magic));
         html.javascript("valuespec_listof_fixarrows(document.getElementById('%s_table').childNodes[0]);" % varprefix)
@@ -1352,12 +1360,12 @@ class ListOfMultiple(ValueSpec):
         def render_content():
             html.write('<td class="vlof_content%s">' % extra_css)
             vs.render_input(prefix, value.get(ident))
-            html.write("</td>")
+            html.close_td()
 
         def render_del():
             html.write('<td class="vlof_buttons%s">' % extra_css)
             self.del_button(varprefix, ident)
-            html.write('</td>')
+            html.close_td()
 
         for ident, vs in self._choices:
             cls = ident not in value and 'unused' or ''
@@ -1369,9 +1377,9 @@ class ListOfMultiple(ValueSpec):
             else:
                 render_del()
                 render_content()
-            html.write("</tr>")
-        html.write("</table>")
-        html.write("<br>")
+            html.close_tr()
+        html.close_table()
+        html.open_br()
 
         choosable = [('', '')] + [ (ident, vs.title()) for ident, vs in self._choices ]
         attrs = {}
@@ -1773,7 +1781,7 @@ class CascadingDropdown(ValueSpec):
         cur_val = html.var(vp)
 
         if self._orientation == "vertical":
-            html.write("<br>")
+            html.open_br()
         else:
             html.write("&nbsp;")
         for nr, (val, title, vs) in enumerate(choices):
@@ -1800,7 +1808,7 @@ class CascadingDropdown(ValueSpec):
                 html.write('<span id="%s_%s_sub" style="display: %s">' % (varprefix, nr, disp))
                 html.help(vs.help())
                 vs.render_input(vp, def_val_2)
-                html.write('</span>')
+                html.close_span()
 
     def value_to_text(self, value):
         choices = self.choices()
@@ -1879,7 +1887,7 @@ class RadioChoice(DropdownChoice):
         html.begin_radio_group()
         if self._columns != None:
             html.write("<table class=radiochoice>")
-            html.write("<tr>")
+            html.open_tr()
 
         if self._sorted:
             choices = self._choices[:]
@@ -1888,7 +1896,7 @@ class RadioChoice(DropdownChoice):
             choices = self._choices
         for n, entry in enumerate(choices):
             if self._columns != None:
-                html.write("<td>")
+                html.open_td()
             if len(entry) > 2 and entry[2] != None: # icon!
                 label = html.render_icon(entry[2], entry[1])
             else:
@@ -1897,7 +1905,7 @@ class RadioChoice(DropdownChoice):
             if len(entry) > 3 and entry[3]:
                 html.write('<p>%s</p>' % entry[3])
             if self._columns != None:
-                html.write("</td>")
+                html.close_td()
                 if (n+1) % self._columns == 0 and (n+1) < len(self._choices):
                     html.write("<tr></tr>")
             else:
@@ -1958,11 +1966,11 @@ class ListChoice(ValueSpec):
         for nr, (key, title) in enumerate(self._elements):
             if nr % self._columns == 0:
                 if nr > 0:
-                    html.write("</tr>")
-                html.write("<tr>")
-            html.write("<td>")
+                    html.close_tr()
+                html.open_tr()
+            html.open_td()
             html.checkbox("%s_%d" % (varprefix, nr), key in value, label = title)
-            html.write("</td>")
+            html.close_td()
         html.write("</tr></table>")
         # Make sure that at least one variable with the prefix is present
         html.hidden_field(varprefix, "1", add_var=True)
@@ -2012,7 +2020,7 @@ class MultiSelect(ListChoice):
             else:
                 sel = ""
             html.write('<option value="%s"%s>%s</option>\n' % (key, sel, title))
-        html.write("</select>\n")
+        html.close_select()
 
     def render_input(self, varprefix, value):
         self.load_elements()
@@ -2186,7 +2194,7 @@ class OptionalDropdownChoice(DropdownChoice):
             input_value = self._explicit.default_value()
         html.help(self._explicit.help())
         self._explicit.render_input(varprefix + "_ex", input_value)
-        html.write("</span>")
+        html.close_span()
 
     def value_to_text(self, value):
         for val, title in self.choices():
@@ -2360,7 +2368,7 @@ class AbsoluteDate(ValueSpec):
             html.write(" ")
         html.number_input(varprefix + "_day", day, size=2)
         if self._show_titles:
-            html.write('</td>')
+            html.close_td()
 
         if self._include_time:
             if self._show_titles:
@@ -2381,7 +2389,7 @@ class AbsoluteDate(ValueSpec):
                 html.write(" ")
             html.number_input(varprefix + "_sec", sec, size=2)
             if self._show_titles:
-                html.write('</td>')
+                html.close_td()
 
         if self._show_titles:
             html.write('</tr></table>')
@@ -2834,7 +2842,7 @@ class Optional(ValueSpec):
             else:
                 checked = value != self._none_value
 
-        html.write("<span>")
+        html.open_span()
 
         if self._label is not None:
             label = self._label
@@ -2853,8 +2861,8 @@ class Optional(ValueSpec):
         if self._sameline:
             html.write("&nbsp;")
         else:
-            html.write("<br>")
-        html.write("</span>")
+            html.open_br()
+        html.close_span()
         if checked == self._negate:
             display = "none"
         else:
@@ -2870,7 +2878,7 @@ class Optional(ValueSpec):
         if self._valuespec.title():
             html.write(self._valuespec.title() + " ")
         self._valuespec.render_input(varprefix + "_value", value)
-        html.write('</span>\n')
+        html.close_span()
 
     def value_to_text(self, value):
         if value == self._none_value:
@@ -2911,7 +2919,7 @@ class OptionalEdit(Optional):
             else:
                 checked = False
 
-        html.write("<span>")
+        html.open_span()
 
         if self._label is not None:
             label = self._label
@@ -2929,7 +2937,7 @@ class OptionalEdit(Optional):
                       label = label)
 
         html.write("&nbsp;")
-        html.write("</span>")
+        html.close_span()
 
         display_on  = checked == self._negate and 'none' or ''
         display_off = checked != self._negate and 'none' or ''
@@ -2939,13 +2947,13 @@ class OptionalEdit(Optional):
 
         html.write('<span id="%s_off" style="display:%s">' % (div_id, display_off))
         html.write(value)
-        html.write('</span>')
+        html.close_span()
 
         html.write('<span id="%s_on" style="display:%s">' % (div_id, display_on))
         if self._valuespec.title():
             html.write(self._valuespec.title() + " ")
         self._valuespec.render_input(varprefix + "_value", value)
-        html.write('</span>\n')
+        html.close_span()
 
     def from_html_vars(self, varprefix):
         return self._valuespec.from_html_vars(varprefix + "_value")
@@ -3019,7 +3027,7 @@ class Alternative(ValueSpec):
                     (varprefix, nr, disp))
             html.help(vs.help())
             vs.render_input(varprefix + "_%d" % nr, cur_val)
-            html.write("</span>")
+            html.close_span()
 
         if self._orientation == "horizontal":
             html.write("</td></tr></table>")
@@ -3039,14 +3047,14 @@ class Alternative(ValueSpec):
 
             html.radiobutton(varprefix + "_use", str(nr), checked, title)
             if title:
-                html.write("<ul>")
+                html.open_ul()
             if vs == mvs:
                 val = value
             else:
                 val = vs.default_value()
             vs.render_input(varprefix + "_%d" % nr, val)
             if title:
-                html.write("</ul>\n")
+                html.close_ul()
 
     def set_focus(self, varprefix):
         # TODO: Set focus to currently active option
@@ -3118,7 +3126,7 @@ class Tuple(ValueSpec):
         if self._orientation != "float":
             html.write('<table class="valuespec_tuple">')
             if self._orientation == "horizontal":
-                html.write("<tr>")
+                html.open_tr()
 
         for no, element in enumerate(self._elements):
             try:
@@ -3127,7 +3135,7 @@ class Tuple(ValueSpec):
                 val = element.default_value()
             vp = varprefix + "_" + str(no)
             if self._orientation == "vertical":
-                html.write("<tr>")
+                html.open_tr()
             elif self._orientation == "float":
                 html.write(self._separator)
 
@@ -3140,13 +3148,13 @@ class Tuple(ValueSpec):
                 if self._orientation == "vertical":
                     html.write("<td class=tuple_left>%s" % title)
                     html.help(element.help())
-                    html.write("</td>")
+                    html.close_td()
                 elif self._orientation == "horizontal":
                     html.write("<td class=tuple_td><span class=title>%s" % title)
                     html.help(element.help())
-                    html.write("</span>")
+                    html.close_span()
                     if self._title_br:
-                        html.write("<br>")
+                        html.open_br()
                     else:
                         html.write(" ")
                 else:
@@ -3157,13 +3165,13 @@ class Tuple(ValueSpec):
                 html.write("<td class=tuple_right>")
             element.render_input(vp, val)
             if self._orientation != "float":
-                html.write("</td>")
+                html.close_td()
                 if self._orientation == "vertical":
-                    html.write("</tr>")
+                    html.close_tr()
         if self._orientation == "horizontal":
-            html.write("</tr>")
+            html.close_tr()
         if self._orientation != "float":
-            html.write("</table>")
+            html.close_table()
 
     def set_focus(self, varprefix):
         self._elements[0].set_focus(varprefix + "_0")
@@ -3267,7 +3275,7 @@ class Dictionary(ValueSpec):
         if headers_sup or not oneline:
             html.write("<table class=dictionary>")
         if headers_sup:
-            html.write('<tr>')
+            html.open_tr()
         for param, vs in self._get_elements():
             if param in self._hidden_keys:
                 continue
@@ -3307,7 +3315,7 @@ class Dictionary(ValueSpec):
                     html.write('</td><td class=dictright>')
             else:
                 if not oneline:
-                    html.write("<br>")
+                    html.open_br()
 
             html.write('<div class="dictelement%s" id="%s" style="display: %s">' % (
                 ((self._indent and self._columns == 1) and " indent" or ""),
@@ -3321,14 +3329,14 @@ class Dictionary(ValueSpec):
                 vs.render_input(vp, value.get(param, vs.default_value()))
             else:
                 vs.render_input(vp, None)
-            html.write("</div>")
+            html.close_div()
             if not oneline:
                 html.write("</td></tr>")
             elif headers_sup:
-                html.write("</td>")
+                html.close_td()
 
         if not oneline:
-            html.write("</table>")
+            html.close_table()
         elif oneline and self._headers == "sup":
             html.write('</tr></table>')
 
@@ -3368,7 +3376,7 @@ class Dictionary(ValueSpec):
                 div_id, not visible and "none" or ""))
             html.help(vs.help())
             vs.render_input(vp, value.get(param, vs.default_value()))
-            html.write("</div>")
+            html.close_div()
 
     def set_focus(self, varprefix, key=None):
         elements = self._get_elements()
@@ -3978,14 +3986,14 @@ class IconSelector(ValueSpec):
         active_category = icons.get(value, available_icons[0][0])
 
         # Render tab navigation
-        html.write('<ul>')
+        html.open_ul()
         for category_name, category_alias, icons in available_icons:
             active = active_category == category_name and ' class="active"' or ''
             html.write('<li%s>' % active)
             html.write('<a id="%s_%s_nav" class="%s_nav" href="javascript:vs_iconselector_toggle(\'%s\', \'%s\')">%s</a>' %
                    (varprefix, category_name, varprefix, varprefix, category_name, category_alias))
-            html.write('</li>')
-        html.write('</ul>')
+            html.close_li()
+        html.close_ul()
 
         # Now render the icons grouped by category
         empty = self._allow_empty and ['empty'] or []
@@ -3996,14 +4004,14 @@ class IconSelector(ValueSpec):
                 html.write(self.render_icon(icon,
                     onclick = 'vs_iconselector_select(event, \'%s\', \'%s\')' % (varprefix, icon),
                     title = _('Choose this icon'), id = varprefix + '_i_' + icon))
-            html.write('</div>')
+            html.close_div()
 
         import config# FIXME: Clean this up. But how?
         if config.omd_site() and config.user.may('wato.icons'):
             back_param = html.has_var('back') and '&back='+html.urlencode(html.var('back')) or ''
             html.buttonlink('wato.py?mode=icons' + back_param, _('Manage'))
 
-        html.write('</div>')
+        html.close_div()
 
     def from_html_vars(self, varprefix):
         icon = html.var(varprefix + '_value')

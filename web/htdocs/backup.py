@@ -43,6 +43,7 @@ except ImportError:
     import json
 
 import table
+
 import key_mgmt
 from valuespec import *
 from lib import write_settings_file, MKUserError
@@ -869,7 +870,7 @@ class PageBackupJobState(object):
     def page(self):
         html.write("<div id=\"job_details\">")
         self.show_job_details()
-        html.write("</div>")
+        html.close_div()
         html.javascript("refresh_job_details('%s', '%s', %s)" %
              (self._update_url(), self._ident, "true" if is_site() else "false"))
 
@@ -899,7 +900,7 @@ class PageBackupJobState(object):
         html.write("<td class=\"state %s\">%s</td></tr>" % (css, state_txt))
 
         html.write("<tr class=\"data odd0\"><td class=\"left\">%s</td>" % _("Runtime"))
-        html.write("<td>")
+        html.open_td()
         if state["started"]:
             html.write(_("Started at %s") % render.date_and_time(state["started"]))
             duration = time.time() - state["started"]
@@ -913,7 +914,7 @@ class PageBackupJobState(object):
         html.write("<tr class=\"data even0\"><td class=\"left legend\">%s</td>" % _("Output"))
         html.write("<td class=\"log\"><pre>%s</pre></td></tr>" % html.attrencode(state["output"]))
 
-        html.write("</table>")
+        html.close_table()
 
 
 #.

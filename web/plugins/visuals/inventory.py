@@ -169,7 +169,7 @@ class FilterInvtableOperStatus(Filter):
             varname = self.name + "_" + str(state)
             html.checkbox(varname, True, label=state_name)
             if state in (4, 7):
-                html.write("<br>")
+                html.open_br()
         html.end_checkbox_group()
 
     def double_height(self):
@@ -267,7 +267,7 @@ class FilterInvtableInterfaceType(Filter):
     def display(self):
         html.write('<div class=multigroup>')
         self.valuespec().render_input(self.name, self.selection())
-        html.write('</div>')
+        html.close_div()
 
     def filter_table(self, rows):
         current = self.selection()
@@ -433,18 +433,18 @@ class FilterInvHasSoftwarePackage(Filter):
 
     def display(self):
         html.text_input(self._varprefix + "name")
-        html.write("<br>")
+        html.open_br()
         html.begin_radio_group(horizontal=True)
         html.radiobutton(self._varprefix + "match", "exact", True, label=_("exact match"))
         html.radiobutton(self._varprefix + "match", "regex", False, label=_("regular expression, substring match"))
         html.end_radio_group()
-        html.write("<br>")
+        html.open_br()
         html.write(_("Min.&nbsp;Version:"))
         html.text_input(self._varprefix + "version_from", size = 9)
         html.write(" &nbsp; ")
         html.write(_("Max.&nbsp;Vers.:"))
         html.text_input(self._varprefix + "version_to", size = 9)
-        html.write("<br>")
+        html.open_br()
         html.checkbox(self._varprefix + "negate", False, label=_("Negate: find hosts <b>not</b> having this package"))
 
     def filter_table(self, rows):

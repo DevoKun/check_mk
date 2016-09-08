@@ -24,10 +24,16 @@
 # to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
 # Boston, MA 02110-1301 USA.
 
-import time, re, datetime, config, table, livestatus
-from lib import *
-import views, sites
+import time, re, datetime
 
+import config
+import livestatus
+import views
+import sites
+
+import table
+
+from lib import *
 
 #   .--HTML Output---------------------------------------------------------.
 #   |     _   _ _____ __  __ _        ___        _               _         |
@@ -112,14 +118,16 @@ def show_host_log_list(site, host_name):
 
     html.write("<table class=data>\n")
     list_logs(site, host_name, logfiles_of_host(site, host_name))
-    html.write("</table>\n")
+    html.close_table()
 
     html.footer()
 
 
 # Displays a table of logfiles
 def list_logs(site, host_name, logfile_names):
+
     table.begin(empty_text = _("No logs found for this host."))
+
 
     for file_name in logfile_names:
         table.row()
@@ -215,9 +223,9 @@ def show_file(site, host_name, file_name):
             html.icon_button(analyse_url(site, host_name, file_name, line['line']), _("Analyze this line"), "analyze")
             html.write('%s</p>\n' % (html.attrencode(line['line']).replace(" ", "&nbsp;").replace("\1", "<br>") ))
 
-        html.write('</div>\n')
+        html.close_div()
 
-    html.write("</div>\n")
+    html.close_div()
     html.footer()
 
 

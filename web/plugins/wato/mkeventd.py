@@ -1184,7 +1184,7 @@ def show_event_simulator():
     html.button("simulate", _("Try out"))
     html.button("_generate", _("Generate Event!"))
     html.end_form()
-    html.write("<br>")
+    html.open_br()
 
     if html.var("simulate"):
         return vs_mkeventd_event.from_html_vars("event")
@@ -1761,7 +1761,7 @@ def mode_mkeventd_status(phase):
     status = mkeventd.get_status()
     repl_mode = status["status_replication_slavemode"]
     html.write("<h3>%s</h3>" % _("Current Server Status"))
-    html.write("<ul>")
+    html.open_ul()
     html.write("<li>%s</li>" % _("Event Daemon is running."))
     html.write("<li>%s: <b>%s</b></li>" % (_("Current replication mode"),
         { "sync" : _("synchronize"),
@@ -1776,7 +1776,7 @@ def mode_mkeventd_status(phase):
         else:
             html.write(_("<li>No successful synchronization so far.</li>"))
 
-    html.write("</ul>")
+    html.close_ul()
 
     if config.user.may("mkeventd.switchmode"):
         html.begin_form("switch")

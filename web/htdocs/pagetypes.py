@@ -1081,7 +1081,7 @@ class OverridableContainer(Overridable, Container):
                     (type_name, name))
         html.render_icon(type_name)
         html.write(html.attrencode(title))
-        html.write("</li>")
+        html.close_li()
 
 
     # Callback for the Javascript function pagetype_add_to_container(). The

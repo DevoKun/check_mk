@@ -434,22 +434,22 @@ def normal_login_page(called_directly = True):
     if html.has_user_errors():
         html.write('<div id="login_error">')
         html.show_user_errors()
-        html.write('</div>\n')
+        html.close_div()
 
     html.write('<div id="button_text">')
     html.image_button("_login", _('Login'))
-    html.write("</div>\n")
+    html.close_div()
 
     html.write('<div id="foot">Version: %s - &copy; '
                '<a href="http://mathias-kettner.de">Mathias Kettner</a><br /><br />' % cmk.__version__)
     html.write(_('You can use, modify and distribute Check_MK under the terms of the <a href="%s">'
                  'GNU GPL Version 2</a>.') % "http://mathias-kettner.de/gpl.html")
-    html.write("</div>\n")
+    html.close_div()
 
     html.set_focus('_username')
     html.hidden_fields()
     html.end_form()
-    html.write("</div>\n")
+    html.close_div()
 
     html.footer()
 

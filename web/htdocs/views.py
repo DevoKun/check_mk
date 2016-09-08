@@ -573,7 +573,7 @@ class PainterOptions(object):
 
         html.hidden_fields()
         html.end_form()
-        html.write('</div>')
+        html.close_div()
 
 
 
@@ -1467,7 +1467,7 @@ def show_filter(f):
     if not f.visible():
         html.write('<div style="display:none">')
         f.display()
-        html.write('</div>')
+        html.close_div()
     else:
         visuals.show_filter(f)
 
@@ -1502,7 +1502,7 @@ def show_filter_form(is_open, filters):
     html.hidden_fields()
     html.end_form()
 
-    html.write("</div>")
+    html.close_div()
 
 
 def page_view():
@@ -1972,7 +1972,7 @@ def render_view(view, rows, datasource, group_painters, painters,
 
     # FIXME: Sauberer wäre noch die Status Icons hier mit aufzunehmen
     if display_options.enabled(display_options.R):
-        html.write("</div>\n")
+        html.close_div()
 
     if show_footer:
         pid = os.getpid()
@@ -2580,7 +2580,7 @@ def show_command_form(is_open, datasource):
 
     forms.end()
     html.end_form()
-    html.write("</div>")
+    html.close_div()
 
 # Examine the current HTML variables in order determine, which
 # command the user has selected. The fetch ids from a data row
@@ -3161,11 +3161,11 @@ def ajax_popup_action_menu():
                 html.write(_("No title"))
 
             if url_spec:
-                html.write('</a>')
+                html.close_a()
         else:
             html.write(icon[1])
-        html.write('</li>\n')
-    html.write('</ul>\n')
+        html.close_li()
+    html.close_ul()
 
 
 def sanitize_action_url(url_spec):

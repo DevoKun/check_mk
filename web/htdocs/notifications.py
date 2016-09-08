@@ -146,7 +146,7 @@ def render_page_done():
     html.header(_("Confirm"), javascripts=[], stylesheets=[ "pages", "check_mk" ])
     html.write('<div class="really">\n')
     html.write('Done')
-    html.write('</div>')
+    html.close_div()
     html.jsbutton('_back', _("Back"), "window.history.go(-2); window.location.reload();")
     html.footer()
 
