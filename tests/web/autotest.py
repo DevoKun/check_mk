@@ -30,7 +30,6 @@ from bs4 import BeautifulSoup as bs
 # internal imports
 from classes import HTMLOrigTester, HTMLCheck_MKTester
 from tools import compare_html , gentest, compare_and_empty
-from table import Table
 '''
 
 function_start = lambda x: '''

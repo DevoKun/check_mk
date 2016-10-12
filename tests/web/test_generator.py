@@ -189,9 +189,9 @@ def test_element_generation_form():
 
     html.open_body()
     html.open_form()
-    html.label('test_input', 'Test')
+    html.label('Test', 'test_input')
     html.input('test_input', type_='radio')
-    html.label('test_input_2', 'Hallo Welt')
+    html.label('Hallo Welt', 'test_input_2')
     html.input('test_input_2', type_='radio')
     html.close_form()
     html.close_body()

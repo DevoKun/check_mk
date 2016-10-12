@@ -72,6 +72,13 @@ except ImportError:
 from cmk.exceptions import MKGeneralException, MKException
 from lib import MKUserError
 
+
+# TODO: REMOVE (JUST FOR TESTING)
+__builtin__._ = lambda x: x
+
+
+
+
 # Information about uri
 class InvalidUserInput(Exception):
     def __init__(self, varname, text):
