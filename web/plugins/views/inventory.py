@@ -305,17 +305,17 @@ def render_inv_dicttable(hostname, tree_id, invpath, node):
             ("host", hostname)],
             filename="view.py")
         html.open_div(class_="invtablelink")
-        html.a(href=url, _("Open this table for filtering / sorting"))
+        html.a(_("Open this table for filtering / sorting"), href=url)
 
     # We cannot use table here, since html.plug() does not work recursively
-    html.write('<table class=data>')
+    html.open_table(class_="data")
     html.open_tr()
     for title, key in titles:
-        html.write('<th>%s</th>' % title)
+        html.th(title)
     html.close_tr()
 
     for nr, entry in enumerate(node):
-        html.write('<tr class=even0>')
+        html.open_tr(class_="even0")
         for title, key in titles:
             value = entry.get(key)
             invpath_sub = invpath + "%d.%s" % (nr, key)
@@ -327,11 +327,10 @@ def render_inv_dicttable(hostname, tree_id, invpath, node):
             hint = inv_display_hint(invpath_sub)
             if "paint_function" in hint:
                 td_class, text = hint["paint_function"](value)
-                classtext = ' class="%s"' % td_class
             else:
-                classtext = ""
+                td_class = None
 
-            html.write('<td%s>' % classtext)
+            html.open_td(class_=td_class)
             render_inv_subtree(hostname, tree_id, invpath_sub, value)
             html.close_td()
         html.close_tr()
@@ -860,8 +859,11 @@ def inv_multisite_table(infoname, invpath, columns, add_headers, only_sites, lim
 
     if config.debug_livestatus_queries \
             and html.output_format == "html" and display_options.enabled(display_options.W):
-        html.write('<div class="livestatus message" onmouseover="this.style.display=\'none\';">'
-                           '<tt>%s</tt></div>\n' % (query.replace('\n', '<br>\n')))
+        html.open_div(class_="livestatus message", onmouseover="this.style.display=\'none\';")
+        html.open_tt()
+        html.write(query.replace('\n', '<br>\n'))
+        html.close_tt()
+        html.close_div()
 
     sites.live().set_only_sites(only_sites)
     sites.live().set_prepend_site(True)
