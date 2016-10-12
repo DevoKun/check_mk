@@ -909,7 +909,8 @@ class PageBackupJobState(object):
                 duration = state["finished"] - state["started"]
 
             html.write(_(" (Duration: %s)") % render.timespan(duration))
-        html.write("</td></tr>")
+        html.close_td()
+        html.close_tr()
 
         html.write("<tr class=\"data even0\"><td class=\"left legend\">%s</td>" % _("Output"))
         html.write("<td class=\"log\"><pre>%s</pre></td></tr>" % html.attrencode(state["output"]))

@@ -2165,7 +2165,9 @@ def mode_object_parameters(phase):
                     output_analysed_ruleset(all_rulesets, rulespec, hostname,
                                             serviceinfo["item"], PARAMETERS_OMIT)
                     html.write(rulespec["valuespec"]._elements[2].value_to_text(serviceinfo["parameters"]))
-                    html.write("</td></tr></table>")
+                    html.close_td()
+                    html.close_tr()
+                    html.close_table()
 
 
             elif origin == "active":
@@ -2204,7 +2206,9 @@ def mode_object_parameters(phase):
                     html.write("<tt>%s</tt>" % serviceinfo["command_line"])
                 else:
                     html.write(_("(no command line, passive check)"))
-                html.write("</td></tr></table>")
+                html.close_td()
+                html.close_tr()
+                html.close_table()
 
     last_maingroup = None
     for groupname in groupnames:
@@ -2326,7 +2330,9 @@ def output_analysed_ruleset(all_rulesets, rulespec, hostname, service, known_set
             html.write('<img align=absmiddle class=icon title="%s" src="images/rule_%s%s.png">' % (
                 setting and _("yes") or _("no"), setting and "yes" or "no", not rules and "_off" or ""))
 
-    html.write("</td></tr></table>")
+    html.close_td()
+    html.close_tr()
+    html.close_table()
 
 
 # Returns the outcoming value or None and
@@ -2581,8 +2587,10 @@ def mode_diag_host(phase):
             html.write('</tr></table>')
             html.javascript('start_host_diag_test("%s", "%s")' % (ident, hostname))
 
-    html.write('</td></tr></table>')
-    html.write('</div>')
+    html.close_td()
+    html.close_tr()
+    html.close_table()
+    html.close_div()
 
 
 def ajax_diag_host():
@@ -4033,21 +4041,25 @@ def mode_parentscan(phase):
         html.write("<tr><td>")
         html.write(_("Number of probes per hop") + ":</td><td>")
         html.number_input("probes", settings["probes"], size=2)
-        html.write('</td></tr>')
+        html.close_td()
+        html.close_tr()
         html.write("<tr><td>")
         html.write(_("Maximum distance (TTL) to gateway") + ":</td><td>")
         html.number_input("max_ttl", settings["max_ttl"], size=2)
-        html.write('</td></tr>')
+        html.close_td()
+        html.close_tr()
         html.write('<tr><td>')
         html.write(_("Number of PING probes") + ":")
         html.help(_("After a gateway has been found, Check_MK checks if it is reachable "
                     "via PING. If not, it is skipped and the next gateway nearer to the "
                     "monitoring core is being tried. You can disable this check by setting "
                     "the number of PING probes to 0."))
-        html.write("</td><td>")
+        html.close_td()
+        html.open_td()
         html.number_input("ping_probes", settings.get("ping_probes", 5), size=2)
-        html.write('</td></tr>')
-        html.write('</table>')
+        html.close_td()
+        html.close_tr()
+        html.close_table()
 
         # Configuring parent
         forms.section(_("Configuration"))
@@ -4919,7 +4931,8 @@ def interactive_progress(items, title, stats, finishvars, timewait, success_stat
                "<td class=right></td></tr></tbody></table>")
     html.write("  <div id=progress_title></div>")
     html.write("  <img class=glass src=images/perfometer-bg.png />")
-    html.write("</td></tr>")
+    html.close_td()
+    html.close_tr()
     html.write("<tr><td class=stats>")
     html.write("  <table>")
     for num, (label, value) in enumerate(stats):
@@ -4933,9 +4946,10 @@ def interactive_progress(items, title, stats, finishvars, timewait, success_stat
     html.jsbutton('progress_retry',    _('Retry Failed Hosts'), 'javascript:progress_retry()', 'display:none')
     html.jsbutton('progress_restart',  _('Restart'), 'javascript:location.reload()')
     html.jsbutton('progress_abort',    _('Abort'),   'javascript:progress_end()')
-    html.write("</td></tr>")
-    html.write("</table>")
-    html.write("</center>")
+    html.close_td()
+    html.close_tr()
+    html.close_table()
+    html.close_center()
 
     # Remove all sel_* variables. We do not need them for our ajax-calls.
     # They are just needed for the Abort/Finish links. Those must be converted
@@ -5542,7 +5556,8 @@ def edit_value(valuespec, value, title=""):
     html.write("</td><td class=content>")
 
     valuespec.render_input("ve", value)
-    html.write("</td></tr>")
+    html.close_td()
+    html.close_tr()
 
 def get_edited_value(valuespec):
     value = valuespec.from_html_vars("ve")
@@ -6239,8 +6254,10 @@ def mode_edit_ldap_connection(phase):
 
         connection.disconnect()
 
-    html.write('</td></tr></table>')
-    html.write('</div>')
+    html.close_td()
+    html.close_tr()
+    html.close_table()
+    html.close_div()
 
 #.
 #   .--Global-Settings-----------------------------------------------------.
@@ -12331,7 +12348,8 @@ def create_new_rule_form(rulespec, hostname = None, item = None, varname = None)
 
     html.write('<tr><td>')
     html.button("_new_rule", _("Create rule in folder: "))
-    html.write('</td><td>')
+    html.close_td()
+    html.open_td()
 
     html.select("rule_folder", Folder.folder_choices(), html.var('folder'))
     html.write('</td></tr></table>\n')
@@ -15245,7 +15263,8 @@ def mode_check_manpage(phase):
             html.write('<tr><th>%s</th><td>' % (_("Example for Parameters")))
             vs = rulespec["valuespec"]
             vs.render_input("dummy", vs.default_value())
-            html.write("</td></tr>")
+            html.close_td()
+            html.close_tr()
 
     if manpage["type"] == "check_mk":
         html.write('<tr><th>%s</th><td>%s</td></tr>' % (

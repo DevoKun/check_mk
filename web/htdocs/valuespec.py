@@ -1220,7 +1220,9 @@ class ListOf(ValueSpec):
         self._valuespec.render_input(
             varprefix + "_" + self._magic,
             self._valuespec.default_value())
-        html.write('</td></tr></table>')
+        html.close_td()
+        html.close_tr()
+        html.close_table()
 
         # In the 'complain' phase, where the user already saved the
         # form but the validation failed, we must not display the
@@ -1250,7 +1252,8 @@ class ListOf(ValueSpec):
                 self.move_button(varprefix, nr+1, "down")
             html.write("</td><td class=vlof_content>")
             self._valuespec.render_input(varprefix + "_%d" % (nr+1), v)
-            html.write("</td></tr>")
+            html.close_td()
+            html.close_tr()
         html.close_table()
         html.open_br()
         html.jsbutton(varprefix + "_add", self._add_label,
@@ -2122,9 +2125,12 @@ class DualListChoice(ListChoice):
             'ondblclick' : not self._instant_add and select_func or '',
         }
         func(varprefix + '_unselected', unselected, attrs = attrs, onchange = onchange_unselected)
-        html.write('</td><td>')
+        html.close_td()
+        html.open_td()
         func(varprefix + '_selected', selected, attrs = attrs, onchange = onchange_selected)
-        html.write('</td></tr></table>')
+        html.close_td()
+        html.close_tr()
+        html.close_table()
         html.hidden_field(varprefix, '|'.join([k for k, v in selected]), id = varprefix, add_var = True)
 
 
@@ -2358,12 +2364,14 @@ class AbsoluteDate(ValueSpec):
         year, month, day, hour, mmin, sec = self.split_date(value)
         html.number_input(varprefix + "_year", year, size=4)
         if self._show_titles:
-            html.write('</td><td>')
+            html.close_td()
+            html.open_td()
         else:
             html.write(" ")
         html.number_input(varprefix + "_month", month, size=2)
         if self._show_titles:
-            html.write('</td><td>')
+            html.close_td()
+            html.open_td()
         else:
             html.write(" ")
         html.number_input(varprefix + "_day", day, size=2)
@@ -2378,13 +2386,15 @@ class AbsoluteDate(ValueSpec):
             html.number_input(varprefix + "_hour", hour, size=2)
 
             if self._show_titles:
-                html.write('</td><td>')
+                html.close_td()
+                html.open_td()
             else:
                 html.write(" ")
             html.number_input(varprefix + "_min", mmin, size=2)
 
             if self._show_titles:
-                html.write('</td><td>')
+                html.close_td()
+                html.open_td()
             else:
                 html.write(" ")
             html.number_input(varprefix + "_sec", sec, size=2)
@@ -3022,7 +3032,8 @@ class Alternative(ValueSpec):
                 cur_val = vs.default_value()
 
             if self._orientation == "horizontal":
-                html.write("</td><td>")
+                html.close_td()
+                html.open_td()
             html.write('<span id="%s_%s_sub" style="display: %s">' %
                     (varprefix, nr, disp))
             html.help(vs.help())
@@ -3030,7 +3041,9 @@ class Alternative(ValueSpec):
             html.close_span()
 
         if self._orientation == "horizontal":
-            html.write("</td></tr></table>")
+            html.close_td()
+            html.close_tr()
+            html.close_table()
 
     def render_input_radio(self, varprefix, value):
         mvs, value = self.matching_alternative(value)
@@ -3331,7 +3344,8 @@ class Dictionary(ValueSpec):
                 vs.render_input(vp, None)
             html.close_div()
             if not oneline:
-                html.write("</td></tr>")
+                html.close_td()
+                html.close_tr()
             elif headers_sup:
                 html.close_td()
 

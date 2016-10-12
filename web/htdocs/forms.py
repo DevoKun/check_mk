@@ -244,7 +244,8 @@ def header(title, isopen = True, table_id = "", narrow = False, css=None):
 def container():
     global g_section_open
     if g_section_open:
-        html.write('</td></tr>')
+        html.close_td()
+        html.close_tr()
     html.write('<tr class="%s"><td colspan=2 class=container>' %
          (g_section_isopen and "open" or "closed"))
     g_section_open = True
@@ -256,7 +257,8 @@ def section(title = None, checkbox = None, id = "", simple=False, hide = False, 
     #html.guitest_record_output("forms", ("section", title))
     global g_section_open
     if g_section_open:
-        html.write('</td></tr>')
+        html.close_td()
+        html.close_tr()
     if id:
         id = ' id="%s"' % id
     html.write('<tr class="%s"%s%s>' %
@@ -284,7 +286,8 @@ def end():
     global g_header_open
     g_header_open = False
     if g_section_open:
-        html.write('</td></tr>')
+        html.close_td()
+        html.close_tr()
     html.end_foldable_container()
     html.write('<tr class="bottom %s"><td colspan=2></td></tr>'
             % (g_section_isopen and "open" or "closed"))

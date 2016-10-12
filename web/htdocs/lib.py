@@ -1061,13 +1061,16 @@ def begin_floating_options(div_id, is_open):
     html.write("<table border=0 cellspacing=0 cellpadding=0 class=filterform><tr><td>")
 
 def end_floating_options(reset_url=None):
-    html.write("</td></tr>")
+    html.close_td()
+    html.close_tr()
     html.write("<tr><td>")
     html.button("apply", _("Apply"), "submit")
     if reset_url:
         html.buttonlink(reset_url, _("Reset to defaults"))
 
-    html.write("</td></tr></table>")
+    html.close_td()
+    html.close_tr()
+    html.close_table()
     html.close_div()
 
 def render_floating_option(name, height, varprefix, valuespec, value):

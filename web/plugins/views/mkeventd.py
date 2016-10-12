@@ -441,14 +441,17 @@ if mkeventd_enabled:
         if config.user.may("mkeventd.update_comment"):
             html.write('<tr><td>%s</td><td>' % _("Change comment:"))
             html.text_input('_mkeventd_comment', size=50)
-            html.write('</td></tr>')
+            html.close_td()
+            html.close_tr()
         if config.user.may("mkeventd.update_contact"):
             html.write('<tr><td>%s</td><td>' % _("Change contact:"))
             html.text_input('_mkeventd_contact', size=50)
-            html.write('</td></tr>')
+            html.close_td()
+            html.close_tr()
         html.write('<td></td><td>')
         html.checkbox('_mkeventd_acknowledge', True, label=_("Set event to acknowledged"))
-        html.write('</td></tr>')
+        html.close_td()
+        html.close_tr()
         html.close_table()
         html.button('_mkeventd_update', _("Update"))
 

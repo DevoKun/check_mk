@@ -4438,7 +4438,8 @@ def render_condition_editor(tag_specs, varprefix=""):
                         html.select(varprefix + "tagvalue_" + id,
                             [(t[0], _u(t[1])) for t in choices if t[0] != None], deflt=default_tag)
                     html.close_div()
-                    html.write("</td></tr>")
+                    html.close_td()
+                    html.close_tr()
 
         # And auxiliary tags
         for t, grouped_tags in auxtags:
@@ -4449,7 +4450,8 @@ def render_condition_editor(tag_specs, varprefix=""):
                     tag_condition_dropdown("auxtag", deflt, id)
                     html.write(" " + _("set"))
                     html.close_div()
-                    html.write("</td></tr>")
+                    html.close_td()
+                    html.close_tr()
 
         html.close_table()
         if make_foldable:

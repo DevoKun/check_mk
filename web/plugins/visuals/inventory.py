@@ -73,11 +73,13 @@ class FilterInvtableAge(Filter):
     def display(self):
         html.write("<table><tr><td style='vertical-align: middle;'>")
         html.write("%s:" % _("from"))
-        html.write("</td><td>")
+        html.close_td()
+        html.open_td()
         Age(display=["days"]).render_input(self.name + "_from", 0)
         html.write("</td></tr><tr><td style='vertical-align: middle;'>")
         html.write("%s:" % _("to"))
-        html.write("</td><td>")
+        html.close_td()
+        html.open_td()
         Age(display=["days"]).render_input(self.name + "_to", 0)
         html.write("</tr></table>")
 

@@ -782,9 +782,11 @@ class FilterTime(Filter):
             html.write("<tr><td>%s:</td>" % whatname)
             html.open_td()
             html.text_input(varprefix, style="width: 116px;")
-            html.write("</td><td>")
+            html.close_td()
+            html.open_td()
             html.select(varprefix + "_range", choices, "3600")
-            html.write("</td></tr>")
+            html.close_td()
+            html.close_tr()
         html.close_table()
 
 
@@ -953,9 +955,12 @@ class FilterLogState(Filter):
             if not html.mobile:
                 html.open_br()
             if varsuffix == "h2":
-                html.write("</td><td>")
+                html.close_td()
+                html.open_td()
         html.end_checkbox_group()
-        html.write("</td></tr></table>")
+        html.close_td()
+        html.close_tr()
+        html.close_table()
 
     def filter(self, infoname):
         headers = []
@@ -1078,14 +1083,17 @@ class FilterHostTags(Filter):
                 onchange = 'host_tag_update_value(\'%s\', this.value)' % prefix,
                 attrs = {'style': 'width:129px'}
             )
-            html.write('</td><td>')
+            html.close_td()
+            html.open_td()
             html.sorted_select(prefix + '_op', [("", "")] + operators,
                 attrs = {'style': 'width:36px'})
-            html.write('</td><td>')
+            html.close_td()
+            html.open_td()
             html.sorted_select(prefix + '_val',
                 html.var(prefix + '_grp') and grouped[html.var(prefix + '_grp')] or [("", "")],
                 attrs = {'style': 'width:129px'})
-            html.write('</td></tr>')
+            html.close_td()
+            html.close_tr()
         html.close_table()
 
     def hosttag_filter(self, negate, tag):

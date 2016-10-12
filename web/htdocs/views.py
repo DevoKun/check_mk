@@ -1497,7 +1497,9 @@ def show_filter_form(is_open, filters):
 
     html.write("</td></tr><tr><td>")
     html.button("search", _("Search"), "submit")
-    html.write("</td></tr></table>")
+    html.close_td()
+    html.close_tr()
+    html.close_table()
 
     html.hidden_fields()
     html.end_form()

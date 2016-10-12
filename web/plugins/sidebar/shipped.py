@@ -1080,7 +1080,8 @@ def render_master_control():
             html.write("<tr><td class=left>%s</td><td>" % title)
             html.icon_button("#", _("Switch %s %s") % (title, colvalue and "off" or "on"),
                              "snapin_switch_" + (colvalue and "on" or "off"), onclick=onclick)
-            html.write("</td></tr>")
+            html.close_td()
+            html.close_tr()
             # html.write("<a onclick=\"%s\" href=\"#\">%s</a></td></tr>\n" % (title, enabled, onclick, enabled))
         html.close_table()
         if not config.is_single_local_site():
