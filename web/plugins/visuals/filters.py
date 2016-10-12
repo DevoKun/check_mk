@@ -957,7 +957,7 @@ class FilterLogState(Filter):
         for varsuffix, what, state, text in self._items:
             if state == 0:
                 title = _("Host") if what == "host" else _("Service")
-                html.u(title)
+                html.u("%s:" % title)
                 html.close_td()
                 html.open_td()
             html.write("&nbsp; ")
