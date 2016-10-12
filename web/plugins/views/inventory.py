@@ -167,9 +167,15 @@ def render_inv_subtree_dict(hostname, tree_id, invpath, node):
         leaf_nodes.sort()
         html.open_table()
         for title, invpath_sub, value in leaf_nodes:
-            html.write("<tr><th title='%s'>%s</th><td>" % (invpath_sub, title))
+            html.open_tr()
+            html.open_th(title=title)
+            html.write(invpath_sub)
+            html.close_th()
+
+            html.open_td()
             render_inv_subtree(hostname, tree_id, invpath_sub, value)
-            html.write("</td></tr>")
+            html.close_td()
+            html.close_tr()
         html.close_table()
 
     non_leaf_nodes = [ item for item in items if not is_leaf_type(item[1]) ]
@@ -189,12 +195,12 @@ def render_inv_subtree_list(hostname, tree_id, invpath, node):
 
     elif type(node) == tuple:
         html.write(_("Removed entries") + ":<br>")
-        html.write("<span class=invold>")
+        html.open_span(class_="invold")
         render_inv_subtree_list(hostname, tree_id, invpath, node[0])
         html.close_span()
 
         html.write(_("New entries") + ":<br>")
-        html.write("<span class=invnew>")
+        html.open_span(class_="invnew")
         render_inv_subtree_list(hostname, tree_id, invpath, node[1])
         html.close_span()
 
@@ -213,16 +219,16 @@ def render_inv_subtree_leaf(hostname, tree_id, invpath, node):
     if type(node) == tuple:
         if node[0] == node[1] or node[0] == None:
             if node[0] == None:
-                html.write("<span class=invnew>")
+                html.open_span(class_="invnew")
             render_inv_subtree_leaf_value(hostname, tree_id, invpath, node[1])
             if node[0] == None:
                 html.close_span()
         else:
-            html.write("<span class=invold>")
+            html.open_span(class_="invold")
             render_inv_subtree_leaf_value(hostname, tree_id, invpath, node[0])
             html.close_span()
             html.write(u" → ")
-            html.write("<span class=invnew>")
+            html.open_span(class_="invnew")
             render_inv_subtree_leaf_value(hostname, tree_id, invpath, node[1])
             html.close_span()
     else:
@@ -255,13 +261,13 @@ def render_inv_subtree_leaf_value(hostname, tree_id, invpath, node):
 def render_inv_dicttable(hostname, tree_id, invpath, node):
     # In delta mode node is a pair of (old_items, new_items)
     if type(node) == tuple:
-        html.write(_("Removed entries") + ":")
-        html.write("<span class=invold>")
+        html.write_text(_("Removed entries") + ":")
+        html.write_span(class_="invold")
         render_inv_dicttable(hostname, tree_id, invpath, node[0])
         html.close_span()
 
         html.write(_("New entries") + ":")
-        html.write("<span class=invnew>")
+        html.write_span(class_="invnew")
         render_inv_dicttable(hostname, tree_id, invpath, node[1])
         html.close_span()
         return
@@ -298,8 +304,8 @@ def render_inv_dicttable(hostname, tree_id, invpath, node):
             ("view_name", hint["view"] ),
             ("host", hostname)],
             filename="view.py")
-        html.write('<div class=invtablelink><a href="%s">%s</a></div>' %
-            (url, _("Open this table for filtering / sorting")))
+        html.open_div(class_="invtablelink")
+        html.a(href=url, _("Open this table for filtering / sorting"))
 
     # We cannot use table here, since html.plug() does not work recursively
     html.write('<table class=data>')
