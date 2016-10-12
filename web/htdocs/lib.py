@@ -1063,7 +1063,8 @@ def begin_floating_options(div_id, is_open):
 def end_floating_options(reset_url=None):
     html.close_td()
     html.close_tr()
-    html.write("<tr><td>")
+    html.open_tr()
+    html.open_td()
     html.button("apply", _("Apply"), "submit")
     if reset_url:
         html.buttonlink(reset_url, _("Reset to defaults"))
