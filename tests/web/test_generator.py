@@ -24,12 +24,12 @@ def test_escape_attribute():
     html = GeneratorTester()
     original = ["Test & \"alles\" <sowas von> klar!",\
                 HTML("Ich bin <ein html> mit <div> tags </div>"),\
-                5, 0.31415926, HTML]
+                5, 0.31415926]
     expected = ["Test &amp; &quot;alles&quot; &lt;sowas von&gt; klar!",\
                 "Ich bin <ein html> mit <div> tags </div>",\
-                "5", "0.31415926", str(HTML) ]
+                "5", "0.31415926" ]
     for (orig, expt) in zip(original, expected):
-        assert html._escape_attribute(orig) == expt
+        assert html._escape_attribute(orig) == expt, "%s %s" % (orig, expt)
 
 
 def test_escape_text():

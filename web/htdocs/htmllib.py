@@ -75,7 +75,7 @@ from lib import MKUserError
 
 # TODO: REMOVE (JUST FOR TESTING)
 __builtin__._ = lambda x: x
-
+#import config
 
 
 
@@ -203,15 +203,18 @@ class OutputFunnel(object):
 
     # The plugged functionality can be used for debugging.
     def write(self, text):
+
+        txt = text.value if isinstance(text, HTML) else text
+
         if self.plugged:
-            self.plugged_text += text
+            self.plugged_text += txt
         else:
             # encode when really writing out the data. Not when writing plugged,
             # because the plugged code will be handled somehow by our code. We
             # only encode when leaving the pythonic world.
             if type(text) == unicode:
-                text = text.encode("utf-8")
-            self.lowlevel_write(text)
+                txt = txt.encode("utf-8")
+            self.lowlevel_write(txt)
 
 
     def lowlevel_write(self, text):

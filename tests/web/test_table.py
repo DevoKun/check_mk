@@ -12,9 +12,10 @@ import re
 from bs4 import BeautifulSoup as bs
 
 # internal imports
-from htmllib import html, DeprecatedRenderer
+from htmllib import html
 from htmllib import HTMLGenerator, HTMLCheck_MK
 from tools import compare_html , gentest, compare_and_empty
+from classes import DeprecatedRenderer
 from table import Table
 
 import traceback

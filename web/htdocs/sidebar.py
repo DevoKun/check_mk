@@ -106,7 +106,7 @@ def begin_footnote_links():
     html.write("<div class=footnotelink>")
 
 def end_footnote_links():
-    html.close_div()
+    html.write("</div>\n")
 
 def footnotelinks(links):
     begin_footnote_links()
@@ -190,7 +190,7 @@ def render_messages():
             html.write('<div class="popup_msg" id="message-%s">' % msg['id'])
             html.write('<a href="javascript:void(0)" class="close" onclick="message_close(\'%s\')">x</a>' % msg['id'])
             html.write(html.attrencode(msg['text']).replace('\n', '<br />\n'))
-            html.close_div()
+            html.write('</div>\n')
         if 'gui_popup' in msg['methods']:
             html.javascript('alert(\'%s\'); mark_message_read("%s")' %
                 (html.attrencode(msg['text']).replace('\n', '\\n'), msg['id']))
@@ -225,11 +225,11 @@ def sidebar_foot():
                      "sidebar_messages", onclick = 'read_message()', id = 'msg_button', style = 'display:none')
     html.write('<div id="messages" style="display:none;">')
     render_messages()
-    html.close_div()
+    html.write('</div>')
 
     html.write("<div class=copyright>%s</div>\n" %
         _("&copy; <a target=\"_blank\" href=\"http://mathias-kettner.de\">Mathias Kettner</a>"))
-    html.close_div()
+    html.write('</div>')
 
     if load_user_config()["fold"]:
         html.final_javascript("fold_sidebar();")
@@ -273,9 +273,9 @@ def page_side():
         elif sidebar_snapins.get(name).get("restart", False):
             refresh_snapins.append([name, refresh_url])
             restart_snapins.append(name)
-    html.close_div()
+    html.write('</div>')
     sidebar_foot()
-    html.close_div()
+    html.write('</div>')
 
     html.write("<script language=\"javascript\">\n")
     if restart_snapins:
@@ -288,7 +288,7 @@ def page_side():
     html.write("sidebar_scheduler();\n")
     html.write("window.onresize = function() { set_sidebar_size(); };\n")
     html.write("if (contentFrameAccessible()) { update_content_location(); };\n")
-    html.close_script()
+    html.write("</script>\n")
 
     html.body_end()
 
@@ -330,14 +330,14 @@ def render_snapin(name, state):
         html.write('<div class="minisnapin">')
         html.icon_button(url=None, help=_("Toggle this snapin"), icon="%ssnapin" % minimaxi,
                          onclick="toggle_sidebar_snapin(this, '%s')" % toggle_url)
-        html.close_div()
+        html.write('</div>')
 
         # Button for closing (removing) a snapin
         html.write('<div class="closesnapin">')
         close_url = "sidebar_openclose.py?name=%s&state=off" % name
         html.icon_button(url=None, help=_("Remove this snapin"), icon="closesnapin",
                          onclick="remove_sidebar_snapin(this, '%s')" % close_url)
-        html.close_div()
+        html.write('</div>')
 
     # The heading. A click on the heading mini/maximizes the snapin
     if config.user.may("general.configure_sidebar"):
@@ -349,7 +349,7 @@ def render_snapin(name, state):
     html.write("<b class=heading%s>%s</b>" % (toggle_actions, snapin["title"]))
 
     # End of header
-    html.close_div()
+    html.write("</div>")
 
     # Now comes the content
     html.write("<div id=\"snapin_%s\" class=content%s>\n" % (name, style))
@@ -362,8 +362,8 @@ def render_snapin(name, state):
             html.write('<script>get_url("%s", updateContents, "snapin_%s")</script>' % (refresh_url, name))
     except Exception, e:
         snapin_exception(e)
-    html.close_div()
-    html.close_div()
+    html.write('</div>\n')
+    html.write('</div>')
     return refresh_url
 
 def snapin_exception(e):
@@ -505,12 +505,12 @@ def page_add_snapin():
         html.write("<div class=snapin_preview>")
         html.write("<div class=clickshield></div>")
         render_snapin(name, "open")
-        html.close_div()
+        html.write("</div>")
         html.write("<div class=description>%s</div>" % (description))
 
-        html.close_div()
+        html.write("</div>")
 
-    html.close_div()
+    html.write("</div>\n")
     html.footer()
 
 
@@ -902,7 +902,7 @@ def format_result(row, render_options):
     escaped_name = name.replace('\\', '\\\\')
     html.write('<a id="result_%s" class="%s" href="%s" onClick="mkSearchClose()" target="main">%s' %
                 (escaped_name, css, url, name))
-    html.close_a()
+    html.write('</a>\n')
 
 
 def get_row_name(row):

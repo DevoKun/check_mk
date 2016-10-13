@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/biin/python
 # call using
 # > py.test -s -k test_html_generator.py
 
@@ -17,6 +17,8 @@ import time
 from bs4 import BeautifulSoup as bs
 from bs4 import NavigableString
 
+# internal imports
+from htmllib import HTML
 
 # Some class to put colors in the print messages
 class bcolors:
@@ -59,7 +61,10 @@ def encode_attribute(value):
 
 # convert to BeautifulSoup prettyfied test
 def prettify(html_text):
-    txt = bs(html_text, 'html5lib').prettify()
+    if isinstance(html_text, HTML):
+        txt = bs(html_text.value, 'html5lib').prettify()
+    else:
+        txt = bs(html_text, 'html5lib').prettify()
     return re.sub('\n{2,}', '\n', re.sub('>', '>\n', txt))
 
 
@@ -73,6 +78,11 @@ def undo_encode_attribute(value):
 
 def compare_html(html1, html2):
 
+    if isinstance(html1, HTML):
+       html1 = html1.value
+    if isinstance(html2, HTML):
+       html2 = html2.value
+
     # compare opening tags
     map(lambda x: compare_soup(x[0], x[1]), zip(re.findall(r'<[^<]*>', html1), re.findall(r'<[^<]*>', html2)))
 
@@ -84,6 +94,11 @@ def compare_html(html1, html2):
 
 
 def compare_soup(html1, html2):
+
+    if isinstance(html1, HTML):
+       html1 = html1.value
+    if isinstance(html2, HTML):
+       html2 = html2.value
 
     html1 = prettify(undo_encode_attribute(re.sub('\n','', html1)))
     html2 = prettify(undo_encode_attribute(re.sub('\n','', html2)))
@@ -184,7 +199,7 @@ def html_generator_test(old, new, fun, attributes=None, reinit=True):
 
 
     if reinit:
-        print bcolors.HEADER + "\n\nTESTING" + bcolors.ENDC + dill.source.getsource(fun)
+        print bcolors.HEADER + "TESTING" + bcolors.ENDC + dill.source.getsource(fun)
 
 
     if attributes:

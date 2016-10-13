@@ -327,7 +327,7 @@ class HTMLTester(object):
 
 
     def write(self, text):
-        self.plugged_text += text
+        self.plugged_text += "%s" % text
 
 
     def plug(self):
