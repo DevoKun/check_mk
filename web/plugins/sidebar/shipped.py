@@ -313,7 +313,7 @@ def render_hosts(mode):
             statecolor = 3
         else:
             statecolor = 0
-        html.open_div(class_=["statebullet", "state%d" % statecolor]
+        html.open_div(class_=["statebullet", "state%d" % statecolor])
         html.write("&nbsp;")
         html.close_div()
         html.write(link(host, target + ("&host=%s&site=%s" % (html.urlencode(host), html.urlencode(site)))))
@@ -430,7 +430,7 @@ def render_hostmatrix():
             s = 0
         url = "view.py?view_name=host&site=%s&host=%s" % (html.urlencode(site), html.urlencode(host))
         html.open_td(class_=["state", "state%s" % s])
-        html.a(''. href=url, title=host, target="main", style=["width:%spx;" % cell_size, "height:%spx;" % cell_size])
+        html.a('', href=url, title=host, target="main", style=["width:%spx;" % cell_size, "height:%spx;" % cell_size])
         html.close_td()
 
         if col == n or (row == rows and n == lastcols):
@@ -653,13 +653,13 @@ def render_tactical_overview(extra_filter_headers="", extra_url_variables=None):
             url = html.makeuri_contextless([("view_name", view)] + extra_url_variables, filename="view.py")
             if unhandled:
                 url += "&is_%s_acknowledged=0" % what
-            html.open_td(class_=[td_class, "states prob" if value != 0)
+            html.open_td(class_=[td_class, "states prob" if value != 0 else None])
             html.write(link(str(value), url))
             html.close_td()
 
         if td_class == 'col4':
             url = html.makeuri_contextless([("view_name", stale_view)] + extra_url_variables, filename="view.py")
-            html.open_td(class_=[td_class, "states prob" if value != 0)
+            html.open_td(class_=[td_class, "states prob" if value != 0 else None])
             html.write(link(str(stales), url))
             html.close_td()
 
@@ -1613,7 +1613,7 @@ def render_wiki():
                                 href="/%s/wiki/doku.php?id=%s" % (config.omd_site(), _("sidebar")),
                                 target = "main")
         html.write_html("<p>To get a navigation menu, you have to create a %s in your wiki first.</p>"\
-                                                                           % sidebar))
+                                                                           % sidebar)
 
 sidebar_snapins["wiki"] = {
     "title" : _("Wiki"),
