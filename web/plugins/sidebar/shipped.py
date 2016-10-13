@@ -410,7 +410,7 @@ def render_hostmatrix():
     cell_size, cell_size_rest = divmod(cell_size, 1)
     style = 'width:%spx' % (snapin_width - n * cell_size_rest)
 
-    html.open_table(class_=["content", "center", "hostmatrix"], cellspacing=0, style=["border-collapse:collapse;", style])
+    html.open_table(class_=["content_center", "hostmatrix"], cellspacing=0, style=["border-collapse:collapse;", style])
     col = 1
     row = 1
     for site, host, state, has_been_checked, worstsvc, downtimedepth in hosts:
@@ -634,9 +634,7 @@ def render_tactical_overview(extra_filter_headers="", extra_url_variables=None):
 
         amount, problems, unhandled_problems, stales = data
         html.open_tr()
-        html.open_th()
-        html.write(title)
-        html.close_th()
+        html.th(title)
         html.th(_('Problems'))
         html.th(_('Unhandled'))
 
@@ -655,16 +653,14 @@ def render_tactical_overview(extra_filter_headers="", extra_url_variables=None):
             url = html.makeuri_contextless([("view_name", view)] + extra_url_variables, filename="view.py")
             if unhandled:
                 url += "&is_%s_acknowledged=0" % what
-            text = link(str(value), url)
             html.open_td(class_=[td_class, "states prob" if value != 0)
-            html.write(text)
+            html.write(link(str(value), url))
             html.close_td()
 
         if td_class == 'col4':
             url = html.makeuri_contextless([("view_name", stale_view)] + extra_url_variables, filename="view.py")
-            text = link(str(stales), url)
             html.open_td(class_=[td_class, "states prob" if value != 0)
-            html.write(text)
+            html.write(link(str(stales), url))
             html.close_td()
 
         html.close_tr()
