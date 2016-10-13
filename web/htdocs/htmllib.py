@@ -90,16 +90,92 @@ class RequestTimeout(MKException):
     pass
 
 
-# This is a simple class which wraps a string provided by the caller
-# to make html.attrencode() know that this string should not be
-# encoded, html.attrencode() will then return the unmodified value.
-#
-# This way we can implement encodings while still allowing HTML code
-# processing for some special cases. This is useful when one needs
-# to print out HTML tables in messages or help texts.
-class HTML:
+#.
+#   .--HTML----------------------------------------------------------------.
+#   |                      _   _ _____ __  __ _                            |
+#   |                     | | | |_   _|  \/  | |                           |
+#   |                     | |_| | | | | |\/| | |                           |
+#   |                     |  _  | | | | |  | | |___                        |
+#   |                     |_| |_| |_| |_|  |_|_____|                       |
+#   |                                                                      |
+#   +----------------------------------------------------------------------+
+#   | This is a simple class which wraps a string provided by the caller   |
+#   | to make html.attrencode() know that this string should not be        |
+#   | encoded, html.attrencode() will then return the unmodified value.    |
+#   |                                                                      |
+#   | This way we can implement encodings while still allowing HTML code   |
+#   | processing for some special cases. This is useful when one needs     |
+#   | to print out HTML tables in messages or help texts.                  |
+#   |                                                                      |
+#   | The class now implements all relevant string comparison methods.     |
+#   | The HTMLGenerator render_tag() function returns a HTML object.       |
+#   '----------------------------------------------------------------------'
+class HTML(object):
+
+
     def __init__(self, value):
-        self.value = value
+        if isinstance(value, HTML):
+            self.value = value.value
+        else:
+            self.value = value
+
+
+    def __str__(self):
+        return self.value
+
+
+    def __add__(self, other):
+        if isinstance(other, HTML):
+            return self.value + other.value
+        else:
+            return self.value + other
+
+
+    def __iadd__(self, other):
+        self.value = self.__add__(other)
+        return self
+
+    def __lt__(self, other):
+        if isinstance(other, HTML):
+            return self.value < other.value
+        else:
+            return self.value < other
+
+
+    def ___le__(self, other):
+        if isinstance(other, HTML):
+            return self.value <= other.value
+        else:
+            return self.value <= other
+
+
+    def __eq__(self, other):
+        if isinstance(other, HTML):
+            return self.value == other.value
+        else:
+            return self.value == other
+
+
+    def __ne__(self, other):
+        if isinstance(other, HTML):
+            return self.value != other.value
+        else:
+            return self.value != other
+
+
+    def __gt__(self, other):
+        if isinstance(other, HTML):
+            return self.value > other.value
+        else:
+            return self.value > other
+
+
+    def __ge__(self, other):
+        if isinstance(other, HTML):
+            return self.value >= other.value
+        else:
+            return self.value >= other
+
 
 __builtin__.HTML = HTML
 
@@ -392,9 +468,11 @@ class HTMLGenerator(OutputFunnel):
             elif what == "close" and tag_name in self._tag_names:
                 return lambda : self.write(self._render_closing_tag(tag_name))
 
+            elif what == "idle" and tag_name in self._tag_names:
+                return lambda **attrs: self.write(self._render_content_tag(tag_name, '', **attrs))
+
             elif what == "render" and tag_name in self._tag_names:
-                # TODO: return an instance of HTML class here!!!
-                return lambda content, **attrs: self._render_content_tag(tag_name, content, **attrs)
+                return lambda content, **attrs: HTML(self._render_content_tag(tag_name, content, **attrs))
 
         else:
             return object.__getattribute__(self, name)
