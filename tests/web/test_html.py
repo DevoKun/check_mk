@@ -24,11 +24,12 @@ def test_class_html():
     B = HTML(b)
     C = HTML(c)
 
-    assert A + B == a + b
+    assert (A + B) == (a + b)
     print A
 
     A += B
     assert isinstance(A, HTML), A
+
     a += b
     assert A == a, A
 
