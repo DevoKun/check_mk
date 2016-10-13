@@ -276,7 +276,7 @@ def render_statistics(pie_id, what, table, filter, dashlet):
 
         html.open_th()
         html.open_a(href=url)
-        html.write(name) # TODO: Escapable?
+        html.write_text(name)
         html.close_a()
         html.close_th()
 
@@ -285,7 +285,7 @@ def render_statistics(pie_id, what, table, filter, dashlet):
 
         html.open_td()
         html.open_a(href = url)
-        html.write(count)  # TODO
+        html.write_text(count)
         html.close_a()
         html.close_td()
 
