@@ -298,7 +298,7 @@ def render_hosts(mode):
 
     views.load_views()
     target = views.get_context_link(config.user.id, view)
-    html.write("<table class=allhosts>\n")
+    html.open_table(class_="allhosts")
     col = 1
     for site, host, state, worstsvc in hosts:
         if col == 1:
@@ -313,7 +313,9 @@ def render_hosts(mode):
             statecolor = 3
         else:
             statecolor = 0
-        html.write('<div class="statebullet state%d">&nbsp;</div> ' % statecolor)
+        html.open_div(class_=["statebullet", "state%d" % statecolor]
+        html.write("&nbsp;")
+        html.close_div()
         html.write(link(host, target + ("&host=%s&site=%s" % (html.urlencode(host), html.urlencode(site)))))
         html.close_td()
         if col == num_columns:
@@ -381,7 +383,7 @@ def render_hostmatrix():
     sites.live().set_prepend_site(False)
     hosts.sort()
     if len(hosts) > 900:
-        html.write(_("Sorry, I will not display more than 900 hosts."))
+        html.write_text(_("Sorry, I will not display more than 900 hosts."))
         return
 
     # Choose smallest square number large enough
@@ -408,7 +410,7 @@ def render_hostmatrix():
     cell_size, cell_size_rest = divmod(cell_size, 1)
     style = 'width:%spx' % (snapin_width - n * cell_size_rest)
 
-    html.write('<table class="content_center hostmatrix" cellspacing="0" style="border-collapse:collapse;%s">\n' % style)
+    html.open_table(class_=["content", "center", "hostmatrix"], cellspacing=0, style=["border-collapse:collapse;", style])
     col = 1
     row = 1
     for site, host, state, has_been_checked, worstsvc, downtimedepth in hosts:
@@ -427,10 +429,12 @@ def render_hostmatrix():
         else:
             s = 0
         url = "view.py?view_name=host&site=%s&host=%s" % (html.urlencode(site), html.urlencode(host))
-        html.write('<td class="state state%s"><a href="%s" title="%s" target="main" style="width:%spx;height:%spx;"></a></td>' %
-                                                                                           (s, url, host, cell_size, cell_size))
+        html.open_td(class_=["state", "state%s" % s])
+        html.a(''. href=url, title=host, target="main", style=["width:%spx;" % cell_size, "height:%spx;" % cell_size])
+        html.close_td()
+
         if col == n or (row == rows and n == lastcols):
-            html.write("<tr>\n")
+            html.open_tr()
             col = 1
             row += 1
         else:
@@ -465,7 +469,7 @@ table.hostmatrix td { border: 1px solid #123a4a; padding: 0; border-spacing: 0; 
 
 def render_sitestatus():
     if config.is_multisite():
-        html.write("<table cellspacing=0 class=sitestate>")
+        html.open_table(cellspacing=0, class_="sitestate")
 
         for sitename, sitealias in config.sorted_sites():
             site = config.site(sitename)
@@ -491,9 +495,12 @@ def render_sitestatus():
                     else:
                         title = "Site %s is online" % site["alias"]
 
-            html.write("<tr><td class=left>%s</td>" % text)
+            html.open_tr()
+            html.open_td(class_="left")
+            html.write(text)
+            html.close_td()
             onclick = "switch_site('_site_switch=%s:%s')" % (sitename, switch)
-            html.write("<td class=state>")
+            html.open_td(class_="state")
             html.icon_button("#", _("%s this site") % (state["state"] == "disabled" and "enable" or "disable"),
                              "sitestatus_%s" % state["state"], onclick=onclick)
             html.close_tr()
@@ -613,47 +620,60 @@ def render_tactical_overview(extra_filter_headers="", extra_url_variables=None):
     hstdata, svcdata, notdata = get_tactical_overview_data(extra_filter_headers)
 
     if hstdata is None or svcdata is None or notdata is None:
-        html.write("<center>No data from any site</center>")
+        html.center(_("No data from any site"))
         return
 
     td_class = 'col3'
     if hstdata[-1] or svcdata[-1]:
         td_class = 'col4'
 
-    html.write("<table class=\"content_center tacticaloverview\" cellspacing=2 cellpadding=0 border=0>\n")
+    html.open_table(class_=["content_center", "tacticaloverview"], cellspacing=2, cellpadding=0, border=0)
     for title, data, view, stale_view, what in [
             (_("Hosts"),    hstdata, 'hostproblems', 'stale_hosts',  'host'),
             (_("Services"), svcdata, 'svcproblems',  'uncheckedsvc', 'service')]:
 
         amount, problems, unhandled_problems, stales = data
+        html.open_tr()
+        html.open_th()
+        html.write(title)
+        html.close_th()
+        html.th(_('Problems'))
+        html.th(_('Unhandled'))
 
-        title_row = "<tr><th>%s</th><th>%s</th><th>%s</th>" % (title, _('Problems'), _('Unhandled'))
         if td_class == 'col4':
-            title_row += "<th>%s</th></tr>" % _("Stale")
-        html.write("%s\n" % title_row)
+            html.th(_("Stale"))
+        # TODO:TEST!!! html | used to be inside if, but I think this is wrong
+        html.close_tr()
 
         html.open_tr()
         url = html.makeuri_contextless([("view_name", "all" + what + "s")] + extra_url_variables, filename="view.py")
-        html.write('<td class="total %s"><a target="main" href="%s">%d</a></td>' % (td_class, url, amount))
+        html.open_td(class_=["total", td_class])
+        html.a(amount, target="main", href=url)
+        html.close_td()
 
         for value, unhandled in [ (problems, False), (unhandled_problems, True) ]:
             url = html.makeuri_contextless([("view_name", view)] + extra_url_variables, filename="view.py")
             if unhandled:
                 url += "&is_%s_acknowledged=0" % what
             text = link(str(value), url)
-            html.write('<td class="%s%s">%s</td>' % (td_class, value == 0 and " " or ' states prob', text))
+            html.open_td(class_=[td_class, "states prob" if value != 0)
+            html.write(text)
+            html.close_td()
 
         if td_class == 'col4':
             url = html.makeuri_contextless([("view_name", stale_view)] + extra_url_variables, filename="view.py")
             text = link(str(stales), url)
-            html.write('<td class="%s%s">%s</td>' % (td_class, value == 0 and " " or ' states prob', text))
+            html.open_td(class_=[td_class, "states prob" if value != 0)
+            html.write(text)
+            html.close_td()
 
         html.close_tr()
     html.close_table()
 
     failed_notifications = notdata[0]
     if failed_notifications:
-        html.write('<div class=spacertop><div class=tacticalalert>')
+        html.open_div(class_="spacertop")
+        html.open_div(class_="tacticalalert")
 
         confirm_url = html.makeuri_contextless(extra_url_variables,
                                                filename="clear_failed_notifications.py")
@@ -662,10 +682,9 @@ def render_tactical_overview(extra_filter_headers="", extra_url_variables=None):
         view_url = html.makeuri_contextless(
             [("view_name", "failed_notifications")] + extra_url_variables, filename="view.py")
 
-        html.write('<a target="main" href="%s">%s</a>' %
-            (view_url, _("%d failed notifications") % failed_notifications))
-
-        html.write('</div></div>')
+        html.a( _("%d failed notifications") % failed_notifications, target="main", href=view_url)
+        html.close_div()
+        html.close_div()
 
 
 snapin_tactical_overview_styles = """
@@ -734,24 +753,27 @@ sidebar_snapins["tactical_overview"] = {
 #   '----------------------------------------------------------------------'
 
 def render_performance():
-    def write_line(left, right):
-        html.write("<tr><td class=left>%s</td>"
-                   "<td class=right><strong>%s</strong></td></tr>" % (left, right))
 
-    html.write("<table class=\"content_center performance\">\n")
+    def write_line(left, right):
+        html.open_tr()
+        html.td(left, class_="left")
+        html.td(html.render_strong(right), class_="right")
+        html.close_tr()
+
+    html.open_table(class_=["content_center", "performance"])
 
     data = sites.live().query("GET status\nColumns: service_checks_rate host_checks_rate "
                            "external_commands_rate connections_rate forks_rate "
                            "log_messages_rate cached_log_messages\n")
     for what, col, format in \
-        [("Service checks",        0, "%.2f/s"),
-        ("Host checks",            1, "%.2f/s"),
-        ("External commands",      2, "%.2f/s"),
-        ("Livestatus-conn.",       3, "%.2f/s"),
-        ("Process creations",      4, "%.2f/s"),
-        ("New log messages",       5, "%.2f/s"),
-        ("Cached log messages",    6, "%d")]:
-        write_line(what + ":", format % sum([row[col] for row in data]))
+        [("Service checks",         0, "%.2f/s"),
+         ("Host checks",            1, "%.2f/s"),
+         ("External commands",      2, "%.2f/s"),
+         ("Livestatus-conn.",       3, "%.2f/s"),
+         ("Process creations",      4, "%.2f/s"),
+         ("New log messages",       5, "%.2f/s"),
+         ("Cached log messages",    6, "%d")]:
+        write_line(what + ":", format % sum(row[col] for row in data))
 
     if len(config.allsites()) == 1:
         data = sites.live().query("GET status\nColumns: external_command_buffer_slots "
@@ -760,8 +782,8 @@ def render_performance():
         maxx = sum([row[1] for row in data])
         write_line(_('Com. buf. max/total'), "%d / %d" % (maxx, size))
 
-
     html.close_table()
+
 
 sidebar_snapins["performance"] = {
     "title" : _("Server Performance"),
@@ -805,9 +827,9 @@ table.performance td.right {
 #   '----------------------------------------------------------------------'
 
 def render_speedometer():
-    html.write("<div class=speedometer>");
-    html.write('<img id=speedometerbg src="images/speedometer.png">')
-    html.write('<canvas width=228 height=136 id=speedometer></canvas>')
+    html.open_div(class_="speedometer")
+    html.img(id_="speedometerbg", src="images/speedometer.png")
+    html.idle_canvas(width=228, height=136, id_="speedometer")
     html.close_div()
 
     html.javascript("""
@@ -941,7 +963,7 @@ canvas#speedometer {
 
 def render_current_time():
     import time
-    html.write("<div class=time>%s</div>" % time.strftime("%H:%M"))
+    html.div(time.strftime("%H:%M"), class_="time")
 
 sidebar_snapins["time"] = {
     "title" : _("Server Time"),
@@ -1020,7 +1042,7 @@ def render_nagios():
         else:
             ref, text = entry
             if text[0] == "*":
-                html.write("<ul class=link>")
+                html.open_ul(class_="link")
                 nagioscgilink(text[1:], ref)
                 html.close_ul()
             else:
@@ -1066,7 +1088,7 @@ def render_master_control():
             sitealias = config.site(siteid)["alias"]
             html.begin_foldable_container("master_control", siteid, True, sitealias)
         is_cmc = sites.state(siteid)["program_version"].startswith("Check_MK ")
-        html.write("<table class=master_control>\n")
+        html.open_table(class_="master_control")
         for i, (colname, title) in enumerate(items):
             # Do not show event handlers on Check_MK Micro Core
             if is_cmc and title == _("Event handlers"):
@@ -1077,15 +1099,19 @@ def render_master_control():
             colvalue = siteline[i + 1]
             url = config.url_prefix() + ("check_mk/switch_master_state.py?site=%s&switch=%s&state=%d" % (siteid, colname, 1 - colvalue))
             onclick = "get_url('%s', updateContents, 'snapin_master_control')" % url
-            html.write("<tr><td class=left>%s</td><td>" % title)
+
+            html.open_tr()
+            html.td(title, class_="left")
+            html.open_td()
             html.icon_button("#", _("Switch %s %s") % (title, colvalue and "off" or "on"),
                              "snapin_switch_" + (colvalue and "on" or "off"), onclick=onclick)
+            # html.write("<a onclick=\"%s\" href=\"#\">%s</a>" % (title, enabled, onclick, enabled))
             html.close_td()
             html.close_tr()
-            # html.write("<a onclick=\"%s\" href=\"#\">%s</a></td></tr>\n" % (title, enabled, onclick, enabled))
         html.close_table()
         if not config.is_single_local_site():
             html.end_foldable_container()
+
 
 sidebar_snapins["master_control"] = {
     "title" : _("Master Control"),
@@ -1434,7 +1460,7 @@ div.bookmark {
 def render_custom_links():
     links = config.custom_links.get(config.user.baserole_id)
     if not links:
-        html.write((_("Please edit <tt>%s</tt> in order to configure which links are shown in this snapin.") %
+        html.write_text((_("Please edit <tt>%s</tt> in order to configure which links are shown in this snapin.") %
                   (cmk.paths.default_config_dir + "/multisite.mk")) + "\n")
         return
 
@@ -1468,9 +1494,9 @@ def render_custom_links():
 
                     simplelink(linktext, entry[1], frame)
                 else:
-                    html.write(_("Second part of tuple must be list or string, not %s\n") % str(entry[1]))
+                    html.write_text(_("Second part of tuple must be list or string, not %s\n") % str(entry[1]))
             except Exception, e:
-                html.write(_("invalid entry %s: %s<br>\n") % (entry, e))
+                html.write_text(_("invalid entry %s: %s<br>\n") % (entry, e))
 
     render_list([], links)
 
@@ -1528,11 +1554,11 @@ def render_wiki():
     }
     """ % config.omd_site())
 
-    html.write('<form id="wiki_search" onSubmit="wiki_search()">')
-    html.write('<input id="wiki_search_field" type="text" name="wikisearch"></input>\n')
+    html.open_form(id_="wiki_search", onsubmit="wiki_search();")
+    html.input(id_="wiki_search_field", type_="text", name="wikisearch")
     html.icon_button("#", _("Search"), "wikisearch", onclick="wiki_search();")
     html.close_form()
-    html.write('<div id="wiki_side_clear"></div>')
+    html.idle_div(id_="wiki_side_clear")
 
     start_ul = True
     ul_started = False
@@ -1587,8 +1613,11 @@ def render_wiki():
         if ul_started == True:
             html.close_ul()
     except IOError:
-        html.write("<p>To get a navigation menu, you have to create a <a href='/%s/wiki/doku.php?id=%s' "
-                   "target='main'>sidebar</a> in your wiki first.</p>" % (config.omd_site(), _("sidebar")))
+        sidebar = html.render_a("sidebar",
+                                href="/%s/wiki/doku.php?id=%s" % (config.omd_site(), _("sidebar")),
+                                target = "main")
+        html.write_html("<p>To get a navigation menu, you have to create a %s in your wiki first.</p>"\
+                                                                           % sidebar))
 
 sidebar_snapins["wiki"] = {
     "title" : _("Wiki"),
@@ -1848,7 +1877,7 @@ def tag_tree_url(taggroups, taglist, viewname):
     return html.makeuri_contextless(urlvars, "view.py")
 
 def tag_tree_bullet(state, path, leaf):
-    code = '<div class="tagtree %sstatebullet state%d">&nbsp;</div>' % ((leaf and "leaf " or ""), state)
+    code = '<div(class_=""tagtree %sstatebullet state%d">&nbsp;</div>' % ((leaf and "leaf " or ""), state)
     if not leaf:
         code = '<a title="%s" href="javascript:virtual_host_tree_enter(\'%s\');">%s</a>' % \
            (_("Display the tree only below this node"), "|".join(path), code)
@@ -1924,8 +1953,9 @@ function virtual_host_tree_enter(path)
 def render_tag_tree():
     if not config.virtual_host_trees:
         url = 'wato.py?varname=virtual_host_trees&mode=edit_configvar'
-        html.write(_('You have not defined any virtual host trees. You can '
-                     'do this in the global settings for <a target=main href="%s">Multisite</a>.') % url)
+        multisite = html.render_a("Multisite", href=url, target="main")
+        html.write_html(_('You have not defined any virtual host trees. You can do this '
+                          'in the global settings for %s.') % multisite)
         return
 
     tree_conf = config.user.load_file("virtual_host_tree", {"tree": 0, "cwd": {}})
