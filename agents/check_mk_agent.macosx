@@ -24,15 +24,28 @@
 # to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
 # Boston, MA 02110-1301 USA.
 
-# NOTE: This agent has beed adapted from the Check_MK linux agent.
+# NOTE: This agent has been adapted from the Check_MK linux agent.
 
 # Remove locale settings to eliminate localized outputs where possible
 # Author: Christian Zigotzky <info@xenosoft.de>
 export LC_ALL=C
 unset LANG
 
-export MK_LIBDIR="/to/be/changed"
-export MK_CONFDIR="/to/be/changed"
+export MK_LIBDIR="/usr/local/lib/check_mk_agent"
+export MK_CONFDIR="/usr/local/etc/check_mk"
+
+# Make sure, locally installed binaries are found
+PATH=$PATH:/usr/local/bin
+
+# All executables in PLUGINSDIR will simply be executed and their
+# ouput appended to the output of the agent. Plugins define their own
+# sections and must output headers with '<<<' and '>>>'
+PLUGINSDIR=$MK_LIBDIR/plugins
+
+# All executables in LOCALDIR will by executabled and their
+# output inserted into the section <<<local>>>. Please
+# refer to online documentation for details about local checks.
+LOCALDIR=$MK_LIBDIR/local
 
 # close standard input (for security reasons) and stderr
 if [ "$1" = -d ]
@@ -118,6 +131,30 @@ fi
 # *OSX Server specific stuff, LDAP, etc...
 # *Rewrite cpu / ps check to be faster - takes >1s on my laptop
 # ioreg -l zeigt etliche interessante Inventurdaten
+
+
+# Einbinden von lokalen Plugins, die eine eigene Sektion ausgeben
+if cd $PLUGINSDIR
+then
+  for skript in $(ls)
+  do
+    if [ -x "$skript" ] ; then
+        ./$skript
+    fi
+  done
+fi
+
+# Lokale Einzelchecks
+echo '<<<local>>>'
+if cd $LOCALDIR
+then
+  for skript in $(ls)
+  do
+    if [ -x "$skript" ] ; then
+        ./$skript
+    fi
+  done
+fi
 
 
 # MK's Remote Plugin Executor
